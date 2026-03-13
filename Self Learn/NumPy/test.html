@@ -1,0 +1,2606 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pandas Notes for ML</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2230;
+        --border: #30363d;
+        --accent: #f7b731;
+        --accent2: #ff6b6b;
+        --accent3: #48dbfb;
+        --accent4: #1dd1a1;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --code-bg: #0d1117;
+        --code-border: #21262d;
+        --tag-bg: #21262d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* HEADER */
+      header {
+        background: linear-gradient(
+          135deg,
+          #0d1117 0%,
+          #161b22 50%,
+          #0d1117 100%
+        );
+        border-bottom: 1px solid var(--border);
+        padding: 32px 40px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+      }
+
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .logo-area h1 {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, var(--accent) 0%, #f0932b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .logo-area p {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 300;
+        margin-top: 2px;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .btn-save {
+        background: linear-gradient(135deg, var(--accent) 0%, #f0932b 100%);
+        color: #0d1117;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-family: "Sora", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 0 20px rgba(247, 183, 49, 0.3);
+      }
+
+      .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px rgba(247, 183, 49, 0.5);
+      }
+
+      .btn-save:active {
+        transform: translateY(0);
+      }
+
+      .save-icon {
+        font-size: 16px;
+      }
+
+      /* PROGRESS BAR */
+      .progress-bar {
+        height: 3px;
+        background: var(--border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        width: 0%;
+        transition: width 0.1s;
+      }
+
+      /* SIDEBAR NAV */
+      .layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 0;
+        min-height: calc(100vh - 120px);
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 120px;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding: 24px 0;
+        border-right: 1px solid var(--border);
+      }
+
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+      }
+
+      .sidebar-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 0 20px 12px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border-left: 3px solid transparent;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .nav-item:hover {
+        background: var(--surface);
+        color: var(--text);
+        border-left-color: var(--accent);
+      }
+
+      .nav-item.active {
+        background: var(--surface);
+        color: var(--accent);
+        border-left-color: var(--accent);
+        font-weight: 600;
+      }
+
+      .nav-num {
+        background: var(--tag-bg);
+        color: var(--text-muted);
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        padding: 2px 6px;
+        border-radius: 4px;
+        min-width: 24px;
+        text-align: center;
+      }
+
+      .nav-item.active .nav-num {
+        background: rgba(247, 183, 49, 0.15);
+        color: var(--accent);
+      }
+
+      /* MAIN CONTENT */
+      .main {
+        padding: 40px 48px;
+        overflow-y: auto;
+      }
+
+      /* TOPIC CARD */
+      .topic-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-bottom: 48px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+      }
+
+      .topic-card:hover {
+        border-color: rgba(247, 183, 49, 0.3);
+      }
+
+      .topic-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 28px 32px 20px;
+        background: linear-gradient(
+          135deg,
+          var(--surface2) 0%,
+          var(--surface) 100%
+        );
+        border-bottom: 1px solid var(--border);
+      }
+
+      .topic-num {
+        background: linear-gradient(135deg, var(--accent) 0%, #f0932b 100%);
+        color: #0d1117;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+
+      .topic-title-area h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      .topic-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 300;
+      }
+
+      .topic-body {
+        padding: 28px 32px;
+      }
+
+      /* WHAT IS */
+      .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .what-is {
+        font-size: 15px;
+        line-height: 1.75;
+        color: #c9d1d9;
+        margin-bottom: 24px;
+        padding: 16px 20px;
+        background: rgba(248, 184, 50, 0.05);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 8px 8px 0;
+      }
+
+      /* METHODS */
+      .methods-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+
+      .method-tag {
+        background: var(--tag-bg);
+        border: 1px solid var(--code-border);
+        color: var(--accent3);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+      }
+
+      .method-tag:hover {
+        border-color: var(--accent3);
+        background: rgba(72, 219, 251, 0.08);
+      }
+
+      /* CODE BLOCK */
+      .code-wrapper {
+        background: var(--code-bg);
+        border: 1px solid var(--code-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: #161b22;
+        border-bottom: 1px solid var(--code-border);
+      }
+
+      .code-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .code-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .code-dot:nth-child(1) {
+        background: #ff5f57;
+      }
+      .code-dot:nth-child(2) {
+        background: #ffbd2e;
+      }
+      .code-dot:nth-child(3) {
+        background: #28ca41;
+      }
+
+      .code-lang {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #e6edf3;
+      }
+
+      pre::-webkit-scrollbar {
+        height: 4px;
+      }
+      pre::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+
+      .kw {
+        color: #ff79c6;
+      }
+      .fn {
+        color: #50fa7b;
+      }
+      .st {
+        color: #f1fa8c;
+      }
+      .cm {
+        color: #6272a4;
+        font-style: italic;
+      }
+      .nm {
+        color: #bd93f9;
+      }
+      .op {
+        color: #ff5555;
+      }
+      .out {
+        color: #8be9fd;
+      }
+      .df {
+        color: #ffb86c;
+      }
+
+      /* OUTPUT */
+      .output-block {
+        background: #0a0e14;
+        border: 1px solid #1e2a3a;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-bottom: 24px;
+      }
+
+      .output-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--accent4);
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+
+      .output-block pre {
+        padding: 0;
+        font-size: 12.5px;
+        color: #8be9fd;
+        white-space: pre;
+      }
+
+      /* ML USE */
+      .ml-use {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: linear-gradient(
+          135deg,
+          rgba(29, 209, 161, 0.08) 0%,
+          rgba(29, 209, 161, 0.03) 100%
+        );
+        border: 1px solid rgba(29, 209, 161, 0.2);
+        border-radius: 10px;
+        padding: 16px 20px;
+      }
+
+      .ml-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .ml-use-content strong {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent4);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .ml-use-content p {
+        font-size: 14px;
+        color: #a8d8c8;
+        line-height: 1.6;
+      }
+
+      /* SUMMARY TABLE */
+      .summary-section {
+        background: var(--surface);
+        border: 1px solid rgba(247, 183, 49, 0.3);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 40px;
+      }
+
+      .summary-header {
+        background: linear-gradient(
+          135deg,
+          rgba(247, 183, 49, 0.15) 0%,
+          rgba(240, 147, 43, 0.1) 100%
+        );
+        padding: 24px 32px;
+        border-bottom: 1px solid rgba(247, 183, 49, 0.2);
+      }
+
+      .summary-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .summary-table th {
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 14px 20px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .summary-table td {
+        padding: 14px 20px;
+        font-size: 13.5px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      .summary-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .summary-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .summary-table td:first-child {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--accent);
+        font-weight: 700;
+        width: 40px;
+      }
+
+      .summary-table td:nth-child(2) {
+        font-weight: 600;
+        color: var(--text);
+        width: 200px;
+      }
+
+      .summary-table td:nth-child(3) {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11.5px;
+        color: var(--accent3);
+        width: 220px;
+      }
+
+      .summary-table td:nth-child(4) {
+        color: #a8d8c8;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--surface);
+        border: 1px solid var(--accent);
+        border-radius: 10px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--accent);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 20px rgba(247, 183, 49, 0.2);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 999;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* SCROLL */
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .main {
+          padding: 24px 20px;
+        }
+        header {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <header>
+      <div class="header-inner">
+        <div class="logo-area">
+          <h1>🐼 Pandas Notes for ML</h1>
+          <p>Top 20 Topics — Full Explanation with Code & Output</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-save" onclick="saveAsDocx()">
+            <span class="save-icon">💾</span>
+            Save as .docx
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar">
+        <div class="sidebar-label">Topics</div>
+        <div id="navList"></div>
+      </nav>
+
+      <main class="main" id="mainContent">
+        <div id="topicsContainer"></div>
+        <div class="summary-section" id="summarySection">
+          <div class="summary-header">
+            <h2>📋 Complete Summary — All 20 Topics</h2>
+          </div>
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Topic</th>
+                <th>Key Methods</th>
+                <th>ML Use</th>
+              </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast">✅ pandas_notes.docx saved!</div>
+
+    <script>
+      const topics = [
+        {
+          num: 1,
+          title: "Series Creation",
+          subtitle: "1D labeled array — Pandas-এর মূল building block",
+          methods: [
+            "pd.Series()",
+            "pd.Series(data, index=)",
+            ".name",
+            ".dtype",
+            ".values",
+            ".index",
+          ],
+          what: "Series হলো Pandas-এর একটি one-dimensional labeled array। এটে যেকোনো ধরনের data রাখা যায় — integer, float, string, object। প্রতিটি element-এর সাথে একটি label (index) থাকে। NumPy array-এর মতো, কিন্তু custom index-এর সুবিধাসহ।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># List থেকে Series</span>
+s1 = pd.<span class="fn">Series</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>])
+<span class="fn">print</span>(s1)
+
+<span class="cm"># Custom index দিয়ে</span>
+s2 = pd.<span class="fn">Series</span>([<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">96</span>],
+            index=[<span class="st">'Math'</span>, <span class="st">'Science'</span>, <span class="st">'English'</span>, <span class="st">'History'</span>])
+<span class="fn">print</span>(s2)
+
+<span class="cm"># Dictionary থেকে</span>
+data = {<span class="st">'age'</span>: <span class="nm">25</span>, <span class="st">'salary'</span>: <span class="nm">50000</span>, <span class="st">'score'</span>: <span class="nm">9.5</span>}
+s3 = pd.<span class="fn">Series</span>(data)
+<span class="fn">print</span>(s3)
+
+<span class="cm"># Properties</span>
+<span class="fn">print</span>(<span class="st">"Shape:"</span>, s2.shape)
+<span class="fn">print</span>(<span class="st">"Dtype:"</span>, s2.dtype)
+<span class="fn">print</span>(<span class="st">"Index:"</span>, s2.index.<span class="fn">tolist</span>())`,
+          output: `0    10
+1    20
+2    30
+3    40
+4    50
+dtype: int64
+
+Math       85
+Science    92
+English    78
+History    96
+dtype: int64
+
+age        25.0
+salary    50000.0
+score         9.5
+dtype: float64
+
+Shape: (4,)
+Dtype: int64
+Index: ['Math', 'Science', 'English', 'History']`,
+          ml: "Feature vector তৈরিতে, model output (predictions) store করতে, এবং single column statistics বের করতে Series ব্যবহার হয়। যেমন: y_pred = pd.Series(model.predict(X_test), index=test_idx)",
+        },
+        {
+          num: 2,
+          title: "DataFrame Creation",
+          subtitle: "2D labeled table — ML Dataset-এর মূল structure",
+          methods: [
+            "pd.DataFrame()",
+            "pd.DataFrame(dict)",
+            ".shape",
+            ".columns",
+            ".dtypes",
+            ".info()",
+            ".head()",
+            ".tail()",
+          ],
+          what: "DataFrame হলো Pandas-এর সবচেয়ে গুরুত্বপূর্ণ structure। এটি rows ও columns সহ একটি 2-dimensional table। প্রতিটি column একটি Series। ML-এ dataset সবসময় DataFrame হিসেবে handle করা হয়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Dictionary থেকে DataFrame</span>
+data = {
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>],
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">35</span>, <span class="nm">28</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">50000</span>, <span class="nm">70000</span>, <span class="nm">90000</span>, <span class="nm">60000</span>],
+    <span class="st">'Dept'</span>: [<span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>, <span class="st">'Finance'</span>]
+}
+df = pd.<span class="fn">DataFrame</span>(data)
+<span class="fn">print</span>(df)
+<span class="fn">print</span>(<span class="st">"\nShape:"</span>, df.shape)
+<span class="fn">print</span>(<span class="st">"Columns:"</span>, df.columns.<span class="fn">tolist</span>())
+<span class="fn">print</span>(<span class="st">"\nDataTypes:\n"</span>, df.dtypes)
+<span class="fn">print</span>(<span class="st">"\nInfo:"</span>)
+df.<span class="fn">info</span>()`,
+          output: `      Name  Age  Salary     Dept
+0    Alice   25   50000       IT
+1      Bob   30   70000       HR
+2  Charlie   35   90000       IT
+3    David   28   60000  Finance
+
+Shape: (4, 4)
+Columns: ['Name', 'Age', 'Salary', 'Dept']
+
+DataTypes:
+ Name      object
+Age        int64
+Salary     int64
+Dept      object
+dtype: object
+
+Info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4 entries, 0 to 3
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype
+---  ------  --------------  -----
+ 0   Name    4 non-null      object
+ 1   Age     4 non-null      int64
+ 2   Salary  4 non-null      int64
+ 3   Dept    4 non-null      object`,
+          ml: "ML-এ সম্পূর্ণ training dataset DataFrame হিসেবে থাকে। df[features] দিয়ে X, df[target] দিয়ে y আলাদা করা হয়। .info() দিয়ে missing data ও dtypes একসাথে দেখা যায়।",
+        },
+        {
+          num: 3,
+          title: "Reading Data",
+          subtitle: "External files থেকে data load করা",
+          methods: [
+            "pd.read_csv()",
+            "pd.read_excel()",
+            "pd.read_json()",
+            "pd.read_sql()",
+            "pd.read_parquet()",
+            "pd.read_html()",
+          ],
+          what: "Real-world ML project-এ data সবসময় বাইরের file বা database থেকে আসে। Pandas বিভিন্ন format সমর্থন করে — CSV, Excel, JSON, SQL, Parquet ইত্যাদি। read_csv() সবচেয়ে বেশি ব্যবহৃত কারণ Kaggle সহ বেশিরভাগ dataset CSV format-এ থাকে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Basic CSV read</span>
+df = pd.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>)
+
+<span class="cm"># Advanced options</span>
+df = pd.<span class="fn">read_csv</span>(
+    <span class="st">'data.csv'</span>,
+    sep=<span class="st">','</span>,           <span class="cm"># Separator</span>
+    header=<span class="nm">0</span>,          <span class="cm"># Row number for column names</span>
+    index_col=<span class="st">'ID'</span>,    <span class="cm"># Set column as index</span>
+    usecols=[<span class="st">'Age'</span>, <span class="st">'Salary'</span>],  <span class="cm"># Only load specific columns</span>
+    nrows=<span class="nm">1000</span>,         <span class="cm"># Load only first 1000 rows</span>
+    skiprows=<span class="nm">2</span>,         <span class="cm"># Skip first 2 rows</span>
+    na_values=[<span class="st">'N/A'</span>, <span class="st">'?'</span>, <span class="st">''</span>]  <span class="cm"># Treat as NaN</span>
+)
+
+<span class="cm"># Excel</span>
+df_excel = pd.<span class="fn">read_excel</span>(<span class="st">'data.xlsx'</span>, sheet_name=<span class="st">'Sheet1'</span>)
+
+<span class="cm"># JSON</span>
+df_json = pd.<span class="fn">read_json</span>(<span class="st">'data.json'</span>)
+
+<span class="cm"># Quick look after loading</span>
+<span class="fn">print</span>(df.<span class="fn">head</span>(<span class="nm">3</span>))
+<span class="fn">print</span>(<span class="st">"\nShape:"</span>, df.shape)
+<span class="fn">print</span>(<span class="st">"Memory:"</span>, df.memory_usage(deep=<span class="kw">True</span>).<span class="fn">sum</span>(), <span class="st">"bytes"</span>)`,
+          output: `   Age  Salary
+0   25   50000
+1   30   70000
+2   35   90000
+
+Shape: (1000, 2)
+Memory: 16128 bytes`,
+          ml: "Kaggle dataset, UCI Repository, custom CSV সব pd.read_csv() দিয়ে load হয়। nrows দিয়ে large file-এ quick prototype করা যায়। usecols দিয়ে শুধু প্রয়োজনীয় feature load করে memory save করা যায়।",
+        },
+        {
+          num: 4,
+          title: "Writing Data",
+          subtitle: "Processed data file-এ save করা",
+          methods: [
+            "df.to_csv()",
+            "df.to_excel()",
+            "df.to_json()",
+            "df.to_parquet()",
+            "df.to_sql()",
+            "df.to_pickle()",
+          ],
+          what: "Data preprocessing বা feature engineering-এর পরে processed data save করা দরকার। Pandas বিভিন্ন format-এ export করতে পারে। to_csv() সবচেয়ে portable, to_parquet() large dataset-এ fast ও compressed।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+data = {<span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>], <span class="st">'Score'</span>: [<span class="nm">95</span>, <span class="nm">88</span>]}
+df = pd.<span class="fn">DataFrame</span>(data)
+
+<span class="cm"># CSV — সবচেয়ে common</span>
+df.<span class="fn">to_csv</span>(<span class="st">'output.csv'</span>, index=<span class="kw">False</span>)  <span class="cm"># index=False → row numbers বাদ</span>
+
+<span class="cm"># CSV with custom separator</span>
+df.<span class="fn">to_csv</span>(<span class="st">'output.tsv'</span>, sep=<span class="st">'\t'</span>, index=<span class="kw">False</span>)
+
+<span class="cm"># Excel</span>
+df.<span class="fn">to_excel</span>(<span class="st">'output.xlsx'</span>, sheet_name=<span class="st">'Results'</span>, index=<span class="kw">False</span>)
+
+<span class="cm"># JSON</span>
+df.<span class="fn">to_json</span>(<span class="st">'output.json'</span>, orient=<span class="st">'records'</span>, indent=<span class="nm">2</span>)
+
+<span class="cm"># Parquet (fast, compressed — large dataset-এ ideal)</span>
+df.<span class="fn">to_parquet</span>(<span class="st">'output.parquet'</span>, compression=<span class="st">'snappy'</span>)
+
+<span class="cm"># Pickle (Python object সহ save — ML model pipeline)</span>
+df.<span class="fn">to_pickle</span>(<span class="st">'output.pkl'</span>)
+df_back = pd.<span class="fn">read_pickle</span>(<span class="st">'output.pkl'</span>)
+
+<span class="fn">print</span>(<span class="st">"Files saved successfully!"</span>)
+<span class="fn">print</span>(<span class="st">"JSON output:"</span>)
+<span class="fn">print</span>(df.<span class="fn">to_json</span>(orient=<span class="st">'records'</span>, indent=<span class="nm">2</span>))`,
+          output: `Files saved successfully!
+JSON output:
+[
+  {
+    "Name": "Alice",
+    "Score": 95
+  },
+  {
+    "Name": "Bob",
+    "Score": 88
+  }
+]`,
+          ml: "Preprocessed features to_csv() দিয়ে save করে পরে directly read করা যায়। Model predictions submission file হিসেবে to_csv() ব্যবহার হয়। Large feature matrix-এ to_parquet() অনেক দ্রুত।",
+        },
+        {
+          num: 5,
+          title: "Indexing & Selection",
+          subtitle: ".loc[] ও .iloc[] — label vs position based access",
+          methods: [
+            "df.loc[]",
+            "df.iloc[]",
+            "df['col']",
+            "df[['c1','c2']]",
+            ".at[]",
+            ".iat[]",
+          ],
+          what: ".loc[] হলো label-based indexing — row/column name দিয়ে select করে। .iloc[] হলো position-based — integer position দিয়ে select করে (0-based)। এই পার্থক্য না বুঝলে ML pipeline-এ ভুল data নিয়ে কাজ হবে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>],
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">35</span>, <span class="nm">28</span>],
+    <span class="st">'Score'</span>: [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">96</span>],
+    <span class="st">'Passed'</span>: [<span class="kw">True</span>, <span class="kw">True</span>, <span class="kw">False</span>, <span class="kw">True</span>]
+})
+
+<span class="cm"># Single column</span>
+<span class="fn">print</span>(df[<span class="st">'Age'</span>])
+
+<span class="cm"># Multiple columns</span>
+<span class="fn">print</span>(df[[<span class="st">'Name'</span>, <span class="st">'Score'</span>]])
+
+<span class="cm"># .loc[] — label based (inclusive)</span>
+<span class="fn">print</span>(df.<span class="fn">loc</span>[<span class="nm">0</span>:<span class="nm">2</span>, <span class="st">'Name'</span>:<span class="st">'Score'</span>])
+
+<span class="cm"># .iloc[] — position based (exclusive end)</span>
+<span class="fn">print</span>(df.<span class="fn">iloc</span>[<span class="nm">0</span>:<span class="nm">2</span>, <span class="nm">0</span>:<span class="nm">3</span>])
+
+<span class="cm"># Single value access (fast)</span>
+<span class="fn">print</span>(<span class="st">"loc value:"</span>, df.<span class="fn">at</span>[<span class="nm">2</span>, <span class="st">'Score'</span>])
+<span class="fn">print</span>(<span class="st">"iloc value:"</span>, df.<span class="fn">iat</span>[<span class="nm">2</span>, <span class="nm">2</span>])`,
+          output: `0    25
+1    30
+2    35
+3    28
+Name: Age, dtype: int64
+
+      Name  Score
+0    Alice     85
+1      Bob     92
+2  Charlie     78
+3    David     96
+
+      Name  Age  Score
+0    Alice   25     85
+1      Bob   30     92
+2  Charlie   35     78
+
+      Name  Age  Score
+0    Alice   25     85
+1      Bob   30     92
+
+loc value: 78
+iloc value: 78`,
+          ml: "X = df.loc[:, feature_cols] দিয়ে features নেওয়া, y = df['target'] দিয়ে labels নেওয়া। iloc[train_idx] দিয়ে train/test split করা। at[] দিয়ে single prediction value update করা।",
+        },
+        {
+          num: 6,
+          title: "Slicing Rows & Columns",
+          subtitle: "Data-এর subset বের করা efficiently",
+          methods: [
+            "df[start:end]",
+            "df.loc[row, col]",
+            "df.iloc[r, c]",
+            "df.query()",
+            "df.head()",
+            "df.tail()",
+            "df.sample()",
+          ],
+          what: "Slicing মানে DataFrame-এর একটি নির্দিষ্ট অংশ বের করা। Row slice, column slice বা উভয়ই করা যায়। df.query() দিয়ে SQL-এর মতো condition দিয়ে slice করা যায়। Large dataset-এ efficient slicing memory ও time বাঁচায়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'feature1'</span>: np.random.<span class="fn">randn</span>(<span class="nm">10</span>),
+    <span class="st">'feature2'</span>: np.random.<span class="fn">randint</span>(<span class="nm">1</span>, <span class="nm">100</span>, <span class="nm">10</span>),
+    <span class="st">'feature3'</span>: np.random.<span class="fn">rand</span>(<span class="nm">10</span>),
+    <span class="st">'target'</span>: np.random.<span class="fn">randint</span>(<span class="nm">0</span>, <span class="nm">2</span>, <span class="nm">10</span>)
+})
+
+<span class="cm"># Row slicing</span>
+<span class="fn">print</span>(df[<span class="nm">2</span>:<span class="nm">5</span>])           <span class="cm"># rows 2,3,4</span>
+<span class="fn">print</span>(df.<span class="fn">head</span>(<span class="nm">3</span>))        <span class="cm"># first 3</span>
+<span class="fn">print</span>(df.<span class="fn">tail</span>(<span class="nm">2</span>))        <span class="cm"># last 2</span>
+
+<span class="cm"># Sample rows randomly</span>
+<span class="fn">print</span>(df.<span class="fn">sample</span>(<span class="nm">3</span>, random_state=<span class="nm">42</span>))
+
+<span class="cm"># Query — SQL-like filtering</span>
+subset = df.<span class="fn">query</span>(<span class="st">'feature2 > 50 and target == 1'</span>)
+<span class="fn">print</span>(subset)
+
+<span class="cm"># Select all features, exclude target</span>
+X = df.<span class="fn">iloc</span>[:, :<span class="nm">-1</span>]  <span class="cm"># All rows, all cols except last</span>
+y = df.<span class="fn">iloc</span>[:, <span class="nm">-1</span>]   <span class="cm"># Last column only</span>
+<span class="fn">print</span>(<span class="st">"X shape:"</span>, X.shape)
+<span class="fn">print</span>(<span class="st">"y shape:"</span>, y.shape)`,
+          output: `   feature1  feature2  feature3  target
+2  -0.234137        37  0.832443       0
+3   1.074355        72  0.212339       1
+4  -1.491390        21  0.181825       0
+
+   feature1  feature2  feature3  target
+0   0.496714        52  0.374540       0
+1  -0.138264        93  0.950714       1
+2  -0.234137        37  0.832443       0
+
+   feature1  feature2  feature3  target
+8  -0.854096        67  0.568045       0
+9  -0.255619        83  0.925597       1
+
+X shape: (10, 3)
+y shape: (10,)`,
+          ml: "X = df.iloc[:, :-1] দিয়ে features, y = df.iloc[:, -1] দিয়ে target আলাদা করা — ML-এর সবচেয়ে common pattern। df.sample(frac=0.8) দিয়ে 80% training data নেওয়া যায়।",
+        },
+        {
+          num: 7,
+          title: "Boolean Indexing",
+          subtitle: "Condition দিয়ে rows filter করা",
+          methods: [
+            "df[condition]",
+            "df[df.col > val]",
+            "& | ~ operators",
+            "df.isin()",
+            "df.between()",
+            ".any()",
+            ".all()",
+          ],
+          what: "Boolean indexing মানে True/False condition দিয়ে DataFrame filter করা। একই সাথে multiple condition দেওয়া যায় & (and), | (or), ~ (not) দিয়ে। এটি data cleaning ও feature selection-এ সবচেয়ে বেশি ব্যবহৃত technique।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>, <span class="st">'Eve'</span>],
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">17</span>, <span class="nm">45</span>, <span class="nm">28</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">50000</span>, <span class="nm">80000</span>, <span class="nm">15000</span>, <span class="nm">120000</span>, <span class="nm">60000</span>],
+    <span class="st">'Dept'</span>: [<span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>, <span class="st">'IT'</span>, <span class="st">'Finance'</span>]
+})
+
+<span class="cm"># Single condition</span>
+adults = df[df[<span class="st">'Age'</span>] >= <span class="nm">18</span>]
+<span class="fn">print</span>(adults)
+
+<span class="cm"># Multiple conditions (AND)</span>
+it_high = df[(df[<span class="st">'Dept'</span>] == <span class="st">'IT'</span>) & (df[<span class="st">'Salary'</span>] > <span class="nm">40000</span>)]
+<span class="fn">print</span>(it_high)
+
+<span class="cm"># isin() — multiple value match</span>
+it_hr = df[df[<span class="st">'Dept'</span>].<span class="fn">isin</span>([<span class="st">'IT'</span>, <span class="st">'HR'</span>])]
+<span class="fn">print</span>(it_hr)
+
+<span class="cm"># between()</span>
+mid_salary = df[df[<span class="st">'Salary'</span>].<span class="fn">between</span>(<span class="nm">50000</span>, <span class="nm">90000</span>)]
+<span class="fn">print</span>(mid_salary)
+
+<span class="cm"># NOT condition</span>
+not_it = df[~(df[<span class="st">'Dept'</span>] == <span class="st">'IT'</span>)]
+<span class="fn">print</span>(not_it)`,
+          output: `      Name  Age  Salary     Dept
+0    Alice   25   50000       IT
+1      Bob   30   80000       HR
+3    David   45  120000       IT
+4      Eve   28   60000  Finance
+
+    Name  Age  Salary Dept
+0  Alice   25   50000   IT
+3  David   45  120000   IT
+
+      Name  Age  Salary Dept
+0    Alice   25   50000   IT
+1      Bob   30   80000   HR
+2  Charlie   17   15000   IT
+3    David   45  120000   IT
+
+    Name  Age  Salary     Dept
+0  Alice   25   50000       IT
+1    Bob   30   80000       HR
+4    Eve   28   60000  Finance
+
+    Name  Age  Salary     Dept
+1    Bob   30   80000       HR
+4    Eve   28   60000  Finance`,
+          ml: "Outlier removal: df[df.salary < upper_bound], class imbalance handling, specific subset-এ training করা। df[df['label']==1] দিয়ে positive class বের করা।",
+        },
+        {
+          num: 8,
+          title: "Assigning / Modifying Columns",
+          subtitle: "নতুন feature তৈরি ও existing column পরিবর্তন",
+          methods: [
+            "df['new_col'] = val",
+            "df.assign()",
+            "df.loc[:, col] = val",
+            "df.eval()",
+            "df.insert()",
+          ],
+          what: "Feature engineering-এ নতুন column তৈরি করা ML-এর একটি core কাজ। Pandas-এ সহজে নতুন column add বা existing column modify করা যায়। df.assign() method chaining-এ ব্যবহার করা যায় কারণ এটি নতুন DataFrame return করে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'height'</span>: [<span class="nm">170</span>, <span class="nm">165</span>, <span class="nm">180</span>, <span class="nm">175</span>],  <span class="cm"># cm</span>
+    <span class="st">'weight'</span>: [<span class="nm">70</span>, <span class="nm">55</span>, <span class="nm">90</span>, <span class="nm">80</span>],   <span class="cm"># kg</span>
+    <span class="st">'salary'</span>: [<span class="nm">50000</span>, <span class="nm">60000</span>, <span class="nm">75000</span>, <span class="nm">90000</span>]
+})
+
+<span class="cm"># New column from calculation</span>
+df[<span class="st">'bmi'</span>] = df[<span class="st">'weight'</span>] / (df[<span class="st">'height'</span>] / <span class="nm">100</span>) ** <span class="nm">2</span>
+df[<span class="st">'bmi'</span>] = df[<span class="st">'bmi'</span>].<span class="fn">round</span>(<span class="nm">2</span>)
+
+<span class="cm"># Categorical from numeric (binning)</span>
+df[<span class="st">'bmi_cat'</span>] = pd.<span class="fn">cut</span>(df[<span class="st">'bmi'</span>],
+    bins=[<span class="nm">0</span>, <span class="nm">18.5</span>, <span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">100</span>],
+    labels=[<span class="st">'Underweight'</span>, <span class="st">'Normal'</span>, <span class="st">'Overweight'</span>, <span class="st">'Obese'</span>])
+
+<span class="cm"># Normalize salary (0-1 scaling)</span>
+df[<span class="st">'salary_norm'</span>] = (df[<span class="st">'salary'</span>] - df[<span class="st">'salary'</span>].<span class="fn">min</span>()) / \
+                    (df[<span class="st">'salary'</span>].<span class="fn">max</span>() - df[<span class="st">'salary'</span>].<span class="fn">min</span>())
+
+<span class="cm"># df.assign() for method chaining</span>
+df2 = df.<span class="fn">assign</span>(
+    height_m = <span class="kw">lambda</span> x: x[<span class="st">'height'</span>] / <span class="nm">100</span>,
+    is_healthy = <span class="kw">lambda</span> x: x[<span class="st">'bmi'</span>].<span class="fn">between</span>(<span class="nm">18.5</span>, <span class="nm">24.9</span>)
+)
+
+<span class="fn">print</span>(df[[<span class="st">'height'</span>, <span class="st">'weight'</span>, <span class="st">'bmi'</span>, <span class="st">'bmi_cat'</span>, <span class="st">'salary_norm'</span>]])`,
+          output: `   height  weight    bmi      bmi_cat  salary_norm
+0     170      70  24.22       Normal     0.000000
+1     165      55  20.20       Normal     0.250000
+2     180      90  27.78   Overweight     0.625000
+3     175      80  26.12   Overweight     1.000000`,
+          ml: "Feature engineering: BMI, ratios, log transforms তৈরি। Min-Max normalization দিয়ে model input normalize করা। pd.cut() দিয়ে age, income binning করা।",
+        },
+        {
+          num: 9,
+          title: "Drop / Remove Columns or Rows",
+          subtitle: "অপ্রয়োজনীয় data সরানো",
+          methods: [
+            "df.drop()",
+            "df.drop(columns=[])",
+            "df.drop(index=[])",
+            "df.dropna()",
+            "df.duplicated()",
+            "df.drop_duplicates()",
+          ],
+          what: "ML pipeline-এ irrelevant features বা corrupted rows remove করা data cleaning-এর অংশ। drop() method দিয়ে নির্দিষ্ট row বা column remove করা যায়। inplace=True দিলে original DataFrame change হয়, নাহলে নতুন DataFrame return হয়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'ID'</span>: [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>],
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>],
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">30</span>, <span class="nm">35</span>, <span class="nm">28</span>],
+    <span class="st">'Score'</span>: [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">96</span>],
+    <span class="st">'Useless'</span>: [<span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>, <span class="st">'x'</span>]
+})
+
+<span class="cm"># Drop one column</span>
+df1 = df.<span class="fn">drop</span>(columns=[<span class="st">'Useless'</span>])
+<span class="fn">print</span>(df1)
+
+<span class="cm"># Drop multiple columns</span>
+df2 = df.<span class="fn">drop</span>(columns=[<span class="st">'ID'</span>, <span class="st">'Useless'</span>])
+<span class="fn">print</span>(df2)
+
+<span class="cm"># Drop by row index</span>
+df3 = df.<span class="fn">drop</span>(index=[<span class="nm">0</span>, <span class="nm">4</span>])
+<span class="fn">print</span>(df3)
+
+<span class="cm"># Remove duplicate rows</span>
+df4 = df.<span class="fn">drop_duplicates</span>()
+<span class="fn">print</span>(<span class="st">"After dedup:"</span>, df4.shape)
+
+<span class="cm"># Drop duplicates by specific column</span>
+df5 = df.<span class="fn">drop_duplicates</span>(subset=[<span class="st">'Name'</span>], keep=<span class="st">'first'</span>)
+<span class="fn">print</span>(df5)`,
+          output: `   ID     Name  Age  Score
+0   1    Alice   25     85
+1   2      Bob   30     92
+2   2      Bob   30     92
+3   3  Charlie   35     78
+4   4    David   28     96
+
+      Name  Age  Score
+0    Alice   25     85
+1      Bob   30     92
+2      Bob   30     92
+3  Charlie   35     78
+4    David   28     96
+
+   ID     Name  Age  Score Useless
+1   2      Bob   30     92       x
+2   2      Bob   30     92       x
+3   3  Charlie   35     78       x
+
+After dedup: (4, 5)
+
+   ID     Name  Age  Score Useless
+0   1    Alice   25     85       x
+1   2      Bob   30     92       x
+3   3  Charlie   35     78       x
+4   4    David   28     96       x`,
+          ml: "ID columns, timestamp, redundant features drop করা। Duplicate training samples remove করা (data leakage prevent করতে)। High-correlation বা zero-variance features drop করা।",
+        },
+        {
+          num: 10,
+          title: "Handling Missing Data",
+          subtitle: "NaN values detect, remove ও fill করা",
+          methods: [
+            "df.isna()",
+            "df.isnull()",
+            "df.notna()",
+            "df.dropna()",
+            "df.fillna()",
+            ".interpolate()",
+            "df.isna().sum()",
+          ],
+          what: "Real-world dataset-এ missing values (NaN) প্রায় সবসময়ই থাকে। ML model NaN সরাসরি handle করতে পারে না (বেশিরভাগ ক্ষেত্রে)। তাই missing data হয় remove করতে হয় অথবা impute করতে হয় — mean, median, mode বা forward fill দিয়ে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, np.nan, <span class="nm">35</span>, np.nan, <span class="nm">28</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">50000</span>, <span class="nm">70000</span>, np.nan, <span class="nm">60000</span>, np.nan],
+    <span class="st">'Score'</span>: [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, np.nan, <span class="nm">96</span>],
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, np.nan, <span class="st">'David'</span>, <span class="st">'Eve'</span>]
+})
+
+<span class="cm"># Detect missing values</span>
+<span class="fn">print</span>(<span class="st">"Missing count:\n"</span>, df.<span class="fn">isna</span>().<span class="fn">sum</span>())
+<span class="fn">print</span>(<span class="st">"Missing %:\n"</span>, (df.<span class="fn">isna</span>().<span class="fn">sum</span>() / <span class="fn">len</span>(df) * <span class="nm">100</span>).<span class="fn">round</span>(<span class="nm">1</span>))
+
+<span class="cm"># Drop rows with any NaN</span>
+df_clean = df.<span class="fn">dropna</span>()
+<span class="fn">print</span>(<span class="st">"\nAfter dropna:"</span>, df_clean.shape)
+
+<span class="cm"># Fill numeric with mean</span>
+df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].<span class="fn">fillna</span>(df[<span class="st">'Age'</span>].<span class="fn">mean</span>())
+df[<span class="st">'Salary'</span>] = df[<span class="st">'Salary'</span>].<span class="fn">fillna</span>(df[<span class="st">'Salary'</span>].<span class="fn">median</span>())
+
+<span class="cm"># Fill categorical with mode</span>
+df[<span class="st">'Name'</span>] = df[<span class="st">'Name'</span>].<span class="fn">fillna</span>(df[<span class="st">'Name'</span>].<span class="fn">mode</span>()[<span class="nm">0</span>])
+
+<span class="cm"># Forward fill (time series)</span>
+df[<span class="st">'Score'</span>] = df[<span class="st">'Score'</span>].<span class="fn">fillna</span>(method=<span class="st">'ffill'</span>)
+
+<span class="fn">print</span>(<span class="st">"\nAfter imputation:\n"</span>, df)`,
+          output: `Missing count:
+ Age       2
+Salary    2
+Score     1
+Name      1
+dtype: int64
+
+Missing %:
+ Age      40.0
+Salary   40.0
+Score    20.0
+Name     20.0
+dtype: float64
+
+After dropna: (1, 4)
+
+After imputation:
+    Age    Salary  Score    Name
+0  25.0   50000.0   85.0   Alice
+1  29.3   70000.0   92.0     Bob
+2  35.0   65000.0   78.0   Alice
+3  29.3   60000.0   78.0   David
+4  28.0   65000.0   96.0     Eve`,
+          ml: "ML pipeline-এ সবচেয়ে critical step। Sklearn-এর SimpleImputer-এর আগে Pandas দিয়ে explore করা হয়। Mean imputation numeric features-এ, mode imputation categorical-এ standard practice।",
+        },
+        {
+          num: 11,
+          title: "Data Type Conversion",
+          subtitle: "Column-এর dtype পরিবর্তন করা",
+          methods: [
+            "df.astype()",
+            "pd.to_numeric()",
+            "pd.to_datetime()",
+            "pd.Categorical()",
+            ".astype('category')",
+            "df.convert_dtypes()",
+          ],
+          what: "Pandas-এ correct data type না থাকলে ML model ভুল result দেয়। যেমন — string হিসেবে stored numeric data, integer হওয়া উচিত এমন float। astype() দিয়ে type convert করা যায়। category type memory বাঁচায় এবং encoding-এ সাহায্য করে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'age'</span>: [<span class="st">'25'</span>, <span class="st">'30'</span>, <span class="st">'35'</span>, <span class="st">'28'</span>],      <span class="cm"># String!</span>
+    <span class="st">'salary'</span>: [<span class="nm">50000.0</span>, <span class="nm">70000.0</span>, <span class="nm">90000.0</span>, <span class="nm">60000.0</span>],  <span class="cm"># Float</span>
+    <span class="st">'is_active'</span>: [<span class="nm">1</span>, <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">1</span>],            <span class="cm"># Int, should be bool</span>
+    <span class="st">'dept'</span>: [<span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>, <span class="st">'Finance'</span>],  <span class="cm"># Category</span>
+    <span class="st">'score'</span>: [<span class="st">'85'</span>, <span class="st">'92'</span>, <span class="st">'N/A'</span>, <span class="st">'96'</span>]      <span class="cm"># Mixed!</span>
+})
+
+<span class="fn">print</span>(<span class="st">"Before:\n"</span>, df.dtypes)
+
+<span class="cm"># Convert types</span>
+df[<span class="st">'age'</span>] = df[<span class="st">'age'</span>].<span class="fn">astype</span>(<span class="st">'int64'</span>)
+df[<span class="st">'salary'</span>] = df[<span class="st">'salary'</span>].<span class="fn">astype</span>(<span class="st">'int64'</span>)
+df[<span class="st">'is_active'</span>] = df[<span class="st">'is_active'</span>].<span class="fn">astype</span>(<span class="st">'bool'</span>)
+df[<span class="st">'dept'</span>] = df[<span class="st">'dept'</span>].<span class="fn">astype</span>(<span class="st">'category'</span>)
+
+<span class="cm"># errors='coerce' → invalid values become NaN</span>
+df[<span class="st">'score'</span>] = pd.<span class="fn">to_numeric</span>(df[<span class="st">'score'</span>], errors=<span class="st">'coerce'</span>)
+
+<span class="fn">print</span>(<span class="st">"\nAfter:\n"</span>, df.dtypes)
+<span class="fn">print</span>(<span class="st">"\nData:\n"</span>, df)
+<span class="fn">print</span>(<span class="st">"\nCategories:"</span>, df[<span class="st">'dept'</span>].cat.categories.<span class="fn">tolist</span>())`,
+          output: `Before:
+ age          object
+salary       float64
+is_active      int64
+dept          object
+score         object
+dtype: object
+
+After:
+ age            int64
+salary         int64
+is_active       bool
+dept        category
+score        float64
+dtype: object
+
+Data:
+   age  salary  is_active     dept  score
+0   25   50000       True       IT   85.0
+1   30   70000      False       HR   92.0
+2   35   90000       True       IT    NaN
+3   28   60000       True  Finance   96.0
+
+Categories: ['Finance', 'HR', 'IT']`,
+          ml: "Category type encode করলে Label Encoding সহজ হয়। Numeric conversion ছাড়া sklearn model error দেয়। Memory optimization-এ int64 → int32, float64 → float32 করা হয়।",
+        },
+        {
+          num: 12,
+          title: "Rename Columns / Index",
+          subtitle: "Column বা index-এর নাম পরিবর্তন",
+          methods: [
+            "df.rename()",
+            "df.columns = [...]",
+            "df.index = [...]",
+            "df.set_index()",
+            "df.reset_index()",
+            "df.rename_axis()",
+          ],
+          what: "Raw dataset-এ column names প্রায়ই unclear বা inconsistent থাকে। Proper naming না থাকলে ML pipeline debug করা কঠিন। rename() দিয়ে specific columns rename করা যায়। set_index() দিয়ে meaningful column-কে index বানানো যায়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'col1'</span>: [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>],
+    <span class="st">'Col 2'</span>: [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>],   <span class="cm"># space in name!</span>
+    <span class="st">'COL3'</span>: [<span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">9</span>],
+    <span class="st">'id'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>]
+})
+
+<span class="cm"># Rename specific columns</span>
+df = df.<span class="fn">rename</span>(columns={
+    <span class="st">'col1'</span>: <span class="st">'feature_1'</span>,
+    <span class="st">'Col 2'</span>: <span class="st">'feature_2'</span>,
+    <span class="st">'COL3'</span>: <span class="st">'feature_3'</span>
+})
+<span class="fn">print</span>(df)
+
+<span class="cm"># Bulk rename — lowercase all</span>
+df.columns = [col.<span class="fn">lower</span>().<span class="fn">replace</span>(<span class="st">' '</span>, <span class="st">'_'</span>) <span class="kw">for</span> col <span class="kw">in</span> df.columns]
+<span class="fn">print</span>(df.columns.<span class="fn">tolist</span>())
+
+<span class="cm"># Set index to ID column</span>
+df = df.<span class="fn">set_index</span>(<span class="st">'id'</span>)
+<span class="fn">print</span>(df)
+
+<span class="cm"># Reset index back to 0,1,2...</span>
+df_reset = df.<span class="fn">reset_index</span>()
+<span class="fn">print</span>(df_reset)`,
+          output: `   feature_1  feature_2  feature_3 id
+0          1          4          7  A
+1          2          5          8  B
+2          3          6          9  C
+
+['feature_1', 'feature_2', 'feature_3', 'id']
+
+    feature_1  feature_2  feature_3
+id
+A           1          4          7
+B           2          5          8
+C           3          6          9
+
+  id  feature_1  feature_2  feature_3
+0  A          1          4          7
+1  B          2          5          8
+2  C          3          6          9`,
+          ml: "Raw data-এর messy column names clean করা। Feature importance plot-এ readable names দেখানো। GroupBy merge-এর পরে column conflict resolve করা।",
+        },
+        {
+          num: 13,
+          title: "Sorting",
+          subtitle: "Rows ও Columns ক্রমানুসারে সাজানো",
+          methods: [
+            "df.sort_values()",
+            "df.sort_index()",
+            "df.nlargest()",
+            "df.nsmallest()",
+            "ascending=False",
+            "key=",
+          ],
+          what: "Data sort করা analysis ও visualization-এর আগে প্রয়োজন। sort_values() দিয়ে column-এর value অনুযায়ী sort করা যায়। একাধিক column দিয়েও sort করা যায় — primary, secondary key হিসেবে। ML-এ top predictions ranking-এ ব্যবহার হয়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>, <span class="st">'Eve'</span>],
+    <span class="st">'Dept'</span>: [<span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">90000</span>, <span class="nm">60000</span>, <span class="nm">75000</span>, <span class="nm">80000</span>, <span class="nm">50000</span>],
+    <span class="st">'Score'</span>: [<span class="nm">92</span>, <span class="nm">85</span>, <span class="nm">88</span>, <span class="nm">78</span>, <span class="nm">95</span>]
+})
+
+<span class="cm"># Sort by single column (descending)</span>
+<span class="fn">print</span>(df.<span class="fn">sort_values</span>(<span class="st">'Salary'</span>, ascending=<span class="kw">False</span>))
+
+<span class="cm"># Sort by multiple columns</span>
+<span class="fn">print</span>(df.<span class="fn">sort_values</span>([<span class="st">'Dept'</span>, <span class="st">'Salary'</span>],
+                        ascending=[<span class="kw">True</span>, <span class="kw">False</span>]))
+
+<span class="cm"># Top 3 by Score</span>
+<span class="fn">print</span>(df.<span class="fn">nlargest</span>(<span class="nm">3</span>, <span class="st">'Score'</span>))
+
+<span class="cm"># Bottom 2 by Salary</span>
+<span class="fn">print</span>(df.<span class="fn">nsmallest</span>(<span class="nm">2</span>, <span class="st">'Salary'</span>))
+
+<span class="cm"># Sort by index</span>
+df_sorted = df.<span class="fn">sort_index</span>(ascending=<span class="kw">False</span>)
+<span class="fn">print</span>(df_sorted)`,
+          output: `      Name Dept  Salary  Score
+0    Alice   IT   90000     92
+3    David   HR   80000     78
+2  Charlie   IT   75000     88
+1      Bob   HR   60000     85
+4      Eve   IT   50000     95
+
+      Name Dept  Salary  Score
+1      Bob   HR   60000     85
+3    David   HR   80000     78
+0    Alice   IT   90000     92
+2  Charlie   IT   75000     88
+4      Eve   IT   50000     95
+
+  Name Dept  Salary  Score
+4  Eve   IT   50000     95
+0  Alice  IT  90000     92
+2  Charlie IT  75000     88
+
+  Name Dept  Salary  Score
+4  Eve   IT  50000     95
+1  Bob   HR  60000     85`,
+          ml: "Feature importance top-k দেখানো। Prediction confidence score sort করে top predictions নেওয়া। Training history (epoch vs loss) sort করে best model খোঁজা।",
+        },
+        {
+          num: 14,
+          title: "GroupBy & Aggregation",
+          subtitle: "Data group করে statistics বের করা",
+          methods: [
+            "df.groupby()",
+            ".agg()",
+            ".mean()",
+            ".sum()",
+            ".count()",
+            ".size()",
+            ".transform()",
+            ".apply()",
+            ".filter()",
+          ],
+          what: "GroupBy হলো SQL-এর GROUP BY-এর মতো। একটি বা একাধিক column অনুযায়ী data ভাগ করে প্রতিটি group-এ aggregation apply করা হয়। ML-এ target encoding, group statistics feature তৈরিতে এটি অপরিহার্য।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Dept'</span>: [<span class="st">'IT'</span>, <span class="st">'IT'</span>, <span class="st">'HR'</span>, <span class="st">'HR'</span>, <span class="st">'IT'</span>, <span class="st">'Finance'</span>],
+    <span class="st">'Gender'</span>: [<span class="st">'M'</span>, <span class="st">'F'</span>, <span class="st">'M'</span>, <span class="st">'F'</span>, <span class="st">'M'</span>, <span class="st">'F'</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">90000</span>, <span class="nm">75000</span>, <span class="nm">60000</span>, <span class="nm">65000</span>, <span class="nm">80000</span>, <span class="nm">70000</span>],
+    <span class="st">'Score'</span>: [<span class="nm">92</span>, <span class="nm">88</span>, <span class="nm">85</span>, <span class="nm">90</span>, <span class="nm">78</span>, <span class="nm">82</span>]
+})
+
+<span class="cm"># Group by Dept — mean</span>
+<span class="fn">print</span>(df.<span class="fn">groupby</span>(<span class="st">'Dept'</span>)[<span class="st">'Salary'</span>].<span class="fn">mean</span>())
+
+<span class="cm"># Multiple aggregations at once</span>
+result = df.<span class="fn">groupby</span>(<span class="st">'Dept'</span>).<span class="fn">agg</span>({
+    <span class="st">'Salary'</span>: [<span class="st">'mean'</span>, <span class="st">'max'</span>, <span class="st">'min'</span>],
+    <span class="st">'Score'</span>: [<span class="st">'mean'</span>, <span class="st">'std'</span>]
+})
+<span class="fn">print</span>(result)
+
+<span class="cm"># Group by multiple columns</span>
+<span class="fn">print</span>(df.<span class="fn">groupby</span>([<span class="st">'Dept'</span>, <span class="st">'Gender'</span>])[<span class="st">'Salary'</span>].<span class="fn">mean</span>())
+
+<span class="cm"># transform() — result same shape as original</span>
+df[<span class="st">'dept_mean_salary'</span>] = df.<span class="fn">groupby</span>(<span class="st">'Dept'</span>)[<span class="st">'Salary'</span>].<span class="fn">transform</span>(<span class="st">'mean'</span>)
+<span class="fn">print</span>(df[[<span class="st">'Dept'</span>, <span class="st">'Salary'</span>, <span class="st">'dept_mean_salary'</span>]])`,
+          output: `Dept
+Finance    70000.0
+HR         62500.0
+IT         81666.7
+Name: Salary, dtype: float64
+
+        Salary                Score
+          mean    max    min  mean        std
+Dept
+Finance  70000  70000  70000  82.0        NaN
+HR       62500  65000  60000  87.5   3.535534
+IT       81667  90000  75000  86.0   7.211103
+
+Dept     Gender
+Finance  F         70000.0
+HR       F         65000.0
+         M         60000.0
+IT       F         75000.0
+         M         85000.0
+
+      Dept  Salary  dept_mean_salary
+0       IT   90000          81666.7
+1       IT   75000          81666.7
+2       HR   60000          62500.0
+3       HR   65000          62500.0
+4       IT   80000          81666.7
+5  Finance   70000          70000.0`,
+          ml: "Target encoding: group-wise target mean calculate করা। Feature aggregation: per-customer total purchase, per-product avg rating। Transform দিয়ে group statistics-কে original row-এ add করা।",
+        },
+        {
+          num: 15,
+          title: "Pivot Tables",
+          subtitle: "Multi-dimensional data summarization",
+          methods: [
+            "df.pivot_table()",
+            "pd.pivot()",
+            "df.crosstab()",
+            "aggfunc=",
+            "margins=True",
+            "fill_value=",
+          ],
+          what: "Pivot table হলো multi-dimensional groupby — rows ও columns উভয় দিকে data group করা যায়। Excel-এর pivot table-এর মতো কিন্তু programmable। ML-এ class distribution analysis, feature cross-analysis-এ ব্যবহার হয়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Month'</span>: [<span class="st">'Jan'</span>,<span class="st">'Jan'</span>,<span class="st">'Feb'</span>,<span class="st">'Feb'</span>,<span class="st">'Mar'</span>,<span class="st">'Mar'</span>],
+    <span class="st">'Dept'</span>:  [<span class="st">'IT'</span>,<span class="st">'HR'</span>,<span class="st">'IT'</span>,<span class="st">'HR'</span>,<span class="st">'IT'</span>,<span class="st">'HR'</span>],
+    <span class="st">'Sales'</span>: [<span class="nm">100</span>,<span class="nm">80</span>,<span class="nm">120</span>,<span class="nm">90</span>,<span class="nm">150</span>,<span class="nm">110</span>],
+    <span class="st">'Profit'</span>:[<span class="nm">20</span>,<span class="nm">15</span>,<span class="nm">25</span>,<span class="nm">18</span>,<span class="nm">30</span>,<span class="nm">22</span>]
+})
+
+<span class="cm"># Basic pivot table</span>
+pt = df.<span class="fn">pivot_table</span>(
+    values=<span class="st">'Sales'</span>,
+    index=<span class="st">'Month'</span>,
+    columns=<span class="st">'Dept'</span>,
+    aggfunc=<span class="st">'sum'</span>,
+    margins=<span class="kw">True</span>   <span class="cm"># Add totals row/col</span>
+)
+<span class="fn">print</span>(pt)
+
+<span class="cm"># Multiple values</span>
+pt2 = df.<span class="fn">pivot_table</span>(
+    values=[<span class="st">'Sales'</span>, <span class="st">'Profit'</span>],
+    index=<span class="st">'Month'</span>,
+    columns=<span class="st">'Dept'</span>,
+    aggfunc=<span class="st">'mean'</span>
+)
+<span class="fn">print</span>(pt2)
+
+<span class="cm"># Crosstab — frequency table</span>
+ct = pd.<span class="fn">crosstab</span>(df[<span class="st">'Month'</span>], df[<span class="st">'Dept'</span>])
+<span class="fn">print</span>(ct)`,
+          output: `Dept   HR   IT   All
+Month
+Feb    90  120   210
+Jan    80  100   180
+Mar   110  150   260
+All   280  370   650
+
+       Profit       Sales
+Dept       HR    IT    HR     IT
+Month
+Feb      18.0  25.0  90.0  120.0
+Jan      15.0  20.0  80.0  100.0
+Mar      22.0  30.0 110.0  150.0
+
+Dept   HR  IT
+Month
+Feb     1   1
+Jan     1   1
+Mar     1   1`,
+          ml: "Class distribution heatmap তৈরি। Feature interaction matrix বানানো। Category combination analysis করে new feature discover করা।",
+        },
+        {
+          num: 16,
+          title: "Merge / Join / Concatenate",
+          subtitle: "Multiple DataFrames একত্রিত করা",
+          methods: [
+            "pd.merge()",
+            "df.join()",
+            "pd.concat()",
+            "how='inner/outer/left/right'",
+            "on=",
+            "suffixes=",
+          ],
+          what: "Real ML project-এ data সবসময় multiple tables-এ ছড়িয়ে থাকে। pd.merge() SQL JOIN-এর মতো কাজ করে। pd.concat() rows বা columns একসাথে জোড়া লাগায়। ভুল join করলে data leakage বা missing data হয়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+users = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'user_id'</span>: [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>],
+    <span class="st">'name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>, <span class="st">'David'</span>],
+    <span class="st">'age'</span>: [<span class="nm">25</span>, <span class="nm">30</span>, <span class="nm">35</span>, <span class="nm">28</span>]
+})
+
+orders = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'user_id'</span>: [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">5</span>],   <span class="cm"># user_id 5 doesn't exist!</span>
+    <span class="st">'amount'</span>: [<span class="nm">100</span>, <span class="nm">200</span>, <span class="nm">150</span>, <span class="nm">300</span>],
+    <span class="st">'product'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'A'</span>, <span class="st">'C'</span>]
+})
+
+<span class="cm"># Inner join (only matching)</span>
+inner = pd.<span class="fn">merge</span>(users, orders, on=<span class="st">'user_id'</span>, how=<span class="st">'inner'</span>)
+<span class="fn">print</span>(<span class="st">"Inner:\n"</span>, inner)
+
+<span class="cm"># Left join (all users, fill NaN if no order)</span>
+left = pd.<span class="fn">merge</span>(users, orders, on=<span class="st">'user_id'</span>, how=<span class="st">'left'</span>)
+<span class="fn">print</span>(<span class="st">"\nLeft:\n"</span>, left)
+
+<span class="cm"># Concat — stack DataFrames vertically</span>
+df1 = pd.<span class="fn">DataFrame</span>({<span class="st">'A'</span>:[<span class="nm">1</span>,<span class="nm">2</span>], <span class="st">'B'</span>:[<span class="nm">3</span>,<span class="nm">4</span>]})
+df2 = pd.<span class="fn">DataFrame</span>({<span class="st">'A'</span>:[<span class="nm">5</span>,<span class="nm">6</span>], <span class="st">'B'</span>:[<span class="nm">7</span>,<span class="nm">8</span>]})
+stacked = pd.<span class="fn">concat</span>([df1, df2], ignore_index=<span class="kw">True</span>)
+<span class="fn">print</span>(<span class="st">"\nConcat:\n"</span>, stacked)`,
+          output: `Inner:
+   user_id     name  age  amount product
+0        1    Alice   25     100       A
+1        2      Bob   30     200       B
+2        2      Bob   30     150       A
+
+Left:
+   user_id     name  age  amount product
+0        1    Alice   25   100.0       A
+1        2      Bob   30   200.0       B
+2        2      Bob   30   150.0       A
+3        3  Charlie   35     NaN     NaN
+4        4    David   28     NaN     NaN
+
+Concat:
+   A  B
+0  1  3
+1  2  4
+2  5  7
+3  6  8`,
+          ml: "Feature tables merge করা (user features + behavior features)। Train/test data concat করে full dataset বানানো। Cross-validation fold data join করা।",
+        },
+        {
+          num: 17,
+          title: "Reshaping",
+          subtitle: "DataFrame-এর structure পরিবর্তন করা",
+          methods: [
+            "df.melt()",
+            "df.stack()",
+            "df.unstack()",
+            "df.pivot()",
+            "pd.wide_to_long()",
+          ],
+          what: "Wide format (many columns) ও long format (many rows) — ML বিভিন্ন situation-এ বিভিন্ন format prefer করে। melt() wide → long করে। pivot() long → wide করে। stack/unstack() multi-level index-এ কাজ করে।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Wide format DataFrame</span>
+wide = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Name'</span>: [<span class="st">'Alice'</span>, <span class="st">'Bob'</span>, <span class="st">'Charlie'</span>],
+    <span class="st">'Math'</span>: [<span class="nm">85</span>, <span class="nm">90</span>, <span class="nm">78</span>],
+    <span class="st">'Science'</span>: [<span class="nm">92</span>, <span class="nm">88</span>, <span class="nm">95</span>],
+    <span class="st">'English'</span>: [<span class="nm">78</span>, <span class="nm">82</span>, <span class="nm">90</span>]
+})
+<span class="fn">print</span>(<span class="st">"Wide:\n"</span>, wide)
+
+<span class="cm"># melt() — Wide to Long</span>
+long = wide.<span class="fn">melt</span>(
+    id_vars=[<span class="st">'Name'</span>],
+    value_vars=[<span class="st">'Math'</span>, <span class="st">'Science'</span>, <span class="st">'English'</span>],
+    var_name=<span class="st">'Subject'</span>,
+    value_name=<span class="st">'Score'</span>
+)
+<span class="fn">print</span>(<span class="st">"\nLong (after melt):\n"</span>, long)
+
+<span class="cm"># pivot() — Long back to Wide</span>
+back_wide = long.<span class="fn">pivot</span>(index=<span class="st">'Name'</span>, columns=<span class="st">'Subject'</span>, values=<span class="st">'Score'</span>)
+<span class="fn">print</span>(<span class="st">"\nBack to Wide (pivot):\n"</span>, back_wide)`,
+          output: `Wide:
+      Name  Math  Science  English
+0    Alice    85       92       78
+1      Bob    90       88       82
+2  Charlie    78       95       90
+
+Long (after melt):
+       Name  Subject  Score
+0     Alice     Math     85
+1       Bob     Math     90
+2   Charlie     Math     78
+3     Alice  Science     92
+4       Bob  Science     88
+5   Charlie  Science     95
+6     Alice  English     78
+7       Bob  English     82
+8   Charlie  English     90
+
+Back to Wide (pivot):
+Subject  English  Math  Science
+Name
+Alice         78    85       92
+Bob           82    90       88
+Charlie       90    78       95`,
+          ml: "Time series data reshape করা। One-hot encoding-এর আগে category long format-এ আনা। Multi-output prediction data structure করা।",
+        },
+        {
+          num: 18,
+          title: "Apply / Lambda Functions",
+          subtitle: "Custom function প্রতিটি row/column-এ apply করা",
+          methods: [
+            "df.apply()",
+            "df['col'].map()",
+            "df.applymap()",
+            "df.transform()",
+            "lambda x:",
+            ".pipe()",
+          ],
+          what: "apply() দিয়ে যেকোনো custom Python function প্রতিটি row বা column-এ apply করা যায়। map() Series-এ element-wise mapping করে। এটি complex feature engineering-এর জন্য সবচেয়ে flexible tool।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'Name'</span>: [<span class="st">'Alice Smith'</span>, <span class="st">'Bob Jones'</span>, <span class="st">'charlie brown'</span>],
+    <span class="st">'Age'</span>: [<span class="nm">25</span>, <span class="nm">17</span>, <span class="nm">35</span>],
+    <span class="st">'Salary'</span>: [<span class="nm">50000</span>, <span class="nm">15000</span>, <span class="nm">90000</span>],
+    <span class="st">'Score'</span>: [<span class="nm">85</span>, <span class="nm">42</span>, <span class="nm">92</span>]
+})
+
+<span class="cm"># Lambda — simple inline function</span>
+df[<span class="st">'is_adult'</span>] = df[<span class="st">'Age'</span>].<span class="fn">apply</span>(<span class="kw">lambda</span> x: x >= <span class="nm">18</span>)
+
+<span class="cm"># Custom function on column</span>
+<span class="kw">def</span> <span class="fn">grade</span>(score):
+    <span class="kw">if</span> score >= <span class="nm">90</span>: <span class="kw">return</span> <span class="st">'A'</span>
+    <span class="kw">elif</span> score >= <span class="nm">75</span>: <span class="kw">return</span> <span class="st">'B'</span>
+    <span class="kw">elif</span> score >= <span class="nm">60</span>: <span class="kw">return</span> <span class="st">'C'</span>
+    <span class="kw">else</span>: <span class="kw">return</span> <span class="st">'F'</span>
+
+df[<span class="st">'grade'</span>] = df[<span class="st">'Score'</span>].<span class="fn">apply</span>(grade)
+
+<span class="cm"># Apply on rows (axis=1)</span>
+df[<span class="st">'bonus'</span>] = df.<span class="fn">apply</span>(
+    <span class="kw">lambda</span> row: row[<span class="st">'Salary'</span>] * <span class="nm">0.2</span> <span class="kw">if</span> row[<span class="st">'Score'</span>] > <span class="nm">80</span> <span class="kw">else</span> row[<span class="st">'Salary'</span>] * <span class="nm">0.05</span>,
+    axis=<span class="nm">1</span>)
+
+<span class="cm"># map() for value replacement</span>
+grade_map = {<span class="st">'A'</span>: <span class="nm">4</span>, <span class="st">'B'</span>: <span class="nm">3</span>, <span class="st">'C'</span>: <span class="nm">2</span>, <span class="st">'F'</span>: <span class="nm">0</span>}
+df[<span class="st">'gpa'</span>] = df[<span class="st">'grade'</span>].<span class="fn">map</span>(grade_map)
+
+<span class="fn">print</span>(df[[<span class="st">'Name'</span>, <span class="st">'Score'</span>, <span class="st">'grade'</span>, <span class="st">'bonus'</span>, <span class="st">'gpa'</span>]])`,
+          output: `            Name  Score grade    bonus  gpa
+0    Alice Smith     85     B  10000.0    3
+1      Bob Jones     42     F    750.0    0
+2  charlie brown     92     A  18000.0    4`,
+          ml: "Custom feature engineering, text preprocessing, conditional label encoding। Vectorized alternative না থাকলে apply() দিয়ে complex transformation করা।",
+        },
+        {
+          num: 19,
+          title: "String Operations",
+          subtitle: "str accessor দিয়ে text data process করা",
+          methods: [
+            "df.str.lower()",
+            ".str.upper()",
+            ".str.contains()",
+            ".str.replace()",
+            ".str.split()",
+            ".str.strip()",
+            ".str.len()",
+            ".str.extract()",
+          ],
+          what: "NLP ও text-based ML-এ string operations অপরিহার্য। Pandas-এর .str accessor দিয়ে Series-এর প্রতিটি string-এ vectorized operation করা যায় — কোনো loop ছাড়াই। Text cleaning, feature extraction সবই str accessor দিয়ে সম্ভব।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'email'</span>: [<span class="st">'alice@gmail.com'</span>, <span class="st">'BOB@YAHOO.COM'</span>, <span class="st">'  charlie@outlook.com  '</span>],
+    <span class="st">'name'</span>: [<span class="st">'Alice Smith'</span>, <span class="st">'Bob Jones'</span>, <span class="st">'Charlie Brown'</span>],
+    <span class="st">'review'</span>: [<span class="st">'Great product! Love it.'</span>, <span class="st">'Terrible, very bad'</span>, <span class="st">'Average. ok'</span>]
+})
+
+<span class="cm"># Clean and normalize</span>
+df[<span class="st">'email'</span>] = df[<span class="st">'email'</span>].str.<span class="fn">strip</span>().str.<span class="fn">lower</span>()
+<span class="fn">print</span>(df[<span class="st">'email'</span>])
+
+<span class="cm"># Extract domain from email</span>
+df[<span class="st">'domain'</span>] = df[<span class="st">'email'</span>].str.<span class="fn">split</span>(<span class="st">'@'</span>).str[<span class="nm">1</span>]
+<span class="fn">print</span>(df[<span class="st">'domain'</span>])
+
+<span class="cm"># Extract first name</span>
+df[<span class="st">'first_name'</span>] = df[<span class="st">'name'</span>].str.<span class="fn">split</span>().<span class="fn">str</span>[<span class="nm">0</span>]
+
+<span class="cm"># String length (feature)</span>
+df[<span class="st">'review_len'</span>] = df[<span class="st">'review'</span>].str.<span class="fn">len</span>()
+
+<span class="cm"># Contains keyword (sentiment signal)</span>
+df[<span class="st">'is_positive'</span>] = df[<span class="st">'review'</span>].str.<span class="fn">contains</span>(
+    <span class="st">'great|love|good'</span>, case=<span class="kw">False</span>, regex=<span class="kw">True</span>)
+
+<span class="cm"># Replace text</span>
+df[<span class="st">'review_clean'</span>] = df[<span class="st">'review'</span>].str.<span class="fn">replace</span>(<span class="st">'[!.]'</span>, <span class="st">''</span>, regex=<span class="kw">True</span>)
+
+<span class="fn">print</span>(df[[<span class="st">'name'</span>, <span class="st">'first_name'</span>, <span class="st">'domain'</span>, <span class="st">'review_len'</span>, <span class="st">'is_positive'</span>]])`,
+          output: `0     alice@gmail.com
+1     bob@yahoo.com
+2    charlie@outlook.com
+Name: email, dtype: object
+
+0       gmail.com
+1       yahoo.com
+2    outlook.com
+Name: domain, dtype: object
+
+            name first_name         domain  review_len  is_positive
+0    Alice Smith      Alice      gmail.com          23         True
+1      Bob Jones        Bob      yahoo.com          18        False
+2  Charlie Brown    Charlie    outlook.com          11        False`,
+          ml: "NLP feature extraction: text length, keyword presence, domain extraction। Regex দিয়ে structured data (phone, email, zip) থেকে features বের করা।",
+        },
+        {
+          num: 20,
+          title: "Datetime Operations",
+          subtitle: "Date ও Time data process করা",
+          methods: [
+            "pd.to_datetime()",
+            ".dt.year",
+            ".dt.month",
+            ".dt.day",
+            ".dt.hour",
+            ".dt.weekday",
+            ".dt.dayofyear",
+            "pd.DatetimeIndex",
+            ".resample()",
+          ],
+          what: "Time series ML, fraud detection, sales forecasting — সবখানেই datetime features দরকার। pd.to_datetime() দিয়ে string → datetime convert করা হয়। তারপর .dt accessor দিয়ে year, month, day, hour, weekday ইত্যাদি feature বের করা যায়।",
+          code: `<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'date'</span>: [<span class="st">'2024-01-15'</span>, <span class="st">'2024-03-22'</span>, <span class="st">'2024-07-04'</span>,
+             <span class="st">'2024-11-28'</span>, <span class="st">'2024-12-25'</span>],
+    <span class="st">'sales'</span>: [<span class="nm">1500</span>, <span class="nm">2300</span>, <span class="nm">3100</span>, <span class="nm">4500</span>, <span class="nm">5200</span>]
+})
+
+<span class="cm"># Convert string to datetime</span>
+df[<span class="st">'date'</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="st">'date'</span>])
+
+<span class="cm"># Extract datetime features</span>
+df[<span class="st">'year'</span>] = df[<span class="st">'date'</span>].dt.year
+df[<span class="st">'month'</span>] = df[<span class="st">'date'</span>].dt.month
+df[<span class="st">'day'</span>] = df[<span class="st">'date'</span>].dt.day
+df[<span class="st">'weekday'</span>] = df[<span class="st">'date'</span>].dt.weekday  <span class="cm"># 0=Mon, 6=Sun</span>
+df[<span class="st">'quarter'</span>] = df[<span class="st">'date'</span>].dt.quarter
+df[<span class="st">'is_weekend'</span>] = df[<span class="st">'date'</span>].dt.weekday >= <span class="nm">5</span>
+df[<span class="st">'day_name'</span>] = df[<span class="st">'date'</span>].dt.day_name()
+
+<span class="cm"># Time difference</span>
+df[<span class="st">'days_since_start'</span>] = (df[<span class="st">'date'</span>] - df[<span class="st">'date'</span>].<span class="fn">min</span>()).dt.days
+
+<span class="fn">print</span>(df.drop(<span class="st">'date'</span>, axis=<span class="nm">1</span>))
+
+<span class="cm"># Resample — monthly aggregation</span>
+df_ts = df.<span class="fn">set_index</span>(<span class="st">'date'</span>)
+monthly = df_ts[<span class="st">'sales'</span>].<span class="fn">resample</span>(<span class="st">'ME'</span>).<span class="fn">sum</span>()
+<span class="fn">print</span>(<span class="st">"\nMonthly Sales:"</span>)
+<span class="fn">print</span>(monthly)`,
+          output: `   sales  year  month  day  weekday  quarter  is_weekend   day_name  days_since_start
+0   1500  2024      1   15        0        1       False     Monday                 0
+1   2300  2024      3   22        4        1       False     Friday                67
+2   3100  2024      7    4        3        3       False  Thursday               171
+3   4500  2024     11   28        3        4       False  Thursday               317
+4   5200  2024     12   25        2        4       False Wednesday               344
+
+Monthly Sales:
+date
+2024-01-31    1500
+2024-03-31    2300
+2024-07-31    3100
+2024-11-30    4500
+2024-12-31    5200`,
+          ml: "Time series forecasting-এ year, month, weekday features সবচেয়ে important। Seasonality capture করতে quarter ও month। Days since event — recency feature। resample() দিয়ে aggregated time series বানানো।",
+        },
+      ];
+
+      // Build navigation
+      const navList = document.getElementById("navList");
+      topics.forEach((t, i) => {
+        const item = document.createElement("div");
+        item.className = "nav-item" + (i === 0 ? " active" : "");
+        item.id = `nav-${t.num}`;
+        item.innerHTML = `<span class="nav-num">${String(t.num).padStart(2, "0")}</span>${t.title}`;
+        item.onclick = () => {
+          document
+            .getElementById(`topic-${t.num}`)
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+        navList.appendChild(item);
+      });
+
+      // Build topic cards
+      const container = document.getElementById("topicsContainer");
+      topics.forEach((t) => {
+        const card = document.createElement("div");
+        card.className = "topic-card";
+        card.id = `topic-${t.num}`;
+        card.innerHTML = `
+    <div class="topic-header">
+      <div class="topic-num">${String(t.num).padStart(2, "0")}</div>
+      <div class="topic-title-area">
+        <h2>${t.title}</h2>
+        <div class="topic-subtitle">${t.subtitle}</div>
+      </div>
+    </div>
+    <div class="topic-body">
+      <div class="section-label">What Is It</div>
+      <div class="what-is">${t.what}</div>
+
+      <div class="section-label">Key Methods</div>
+      <div class="methods-grid">${t.methods.map((m) => `<span class="method-tag">${m}</span>`).join("")}</div>
+
+      <div class="section-label">Code Example</div>
+      <div class="code-wrapper">
+        <div class="code-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">python</span>
+        </div>
+        <pre>${t.code}</pre>
+      </div>
+
+      <div class="output-block">
+        <div class="output-label">▶ OUTPUT</div>
+        <pre>${t.output}</pre>
+      </div>
+
+      <div class="ml-use">
+        <span class="ml-icon">🤖</span>
+        <div class="ml-use-content">
+          <strong>ML Application</strong>
+          <p>${t.ml}</p>
+        </div>
+      </div>
+    </div>
+  `;
+        container.appendChild(card);
+      });
+
+      // Build summary table
+      const tbody = document.getElementById("summaryBody");
+      topics.forEach((t) => {
+        const tr = document.createElement("tr");
+        const keyMethods = t.methods.slice(0, 3).join(", ");
+        const mlShort = t.ml.substring(0, 90) + (t.ml.length > 90 ? "..." : "");
+        tr.innerHTML = `
+    <td>${t.num}</td>
+    <td>${t.title}</td>
+    <td>${keyMethods}</td>
+    <td>${mlShort}</td>
+  `;
+        tbody.appendChild(tr);
+      });
+
+      // Scroll progress & active nav
+      const mainEl = document.getElementById("mainContent");
+      window.addEventListener(
+        "scroll",
+        () => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.body.scrollHeight - window.innerHeight;
+          const progress = (scrollTop / docHeight) * 100;
+          document.getElementById("progressFill").style.width = progress + "%";
+
+          topics.forEach((t) => {
+            const el = document.getElementById(`topic-${t.num}`);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= 200 && rect.bottom > 200) {
+                document
+                  .querySelectorAll(".nav-item")
+                  .forEach((n) => n.classList.remove("active"));
+                const nav = document.getElementById(`nav-${t.num}`);
+                if (nav) {
+                  nav.classList.add("active");
+                  nav.scrollIntoView({ block: "nearest" });
+                }
+              }
+            }
+          });
+        },
+        { passive: true },
+      );
+
+      // ─── SAVE AS DOCX ───────────────────────────────────────────────────────────
+      async function saveAsDocx() {
+        const btn = document.querySelector(".btn-save");
+        btn.textContent = "⏳ Generating...";
+        btn.disabled = true;
+
+        try {
+          const {
+            Document,
+            Packer,
+            Paragraph,
+            TextRun,
+            Table,
+            TableRow,
+            TableCell,
+            HeadingLevel,
+            AlignmentType,
+            BorderStyle,
+            WidthType,
+            ShadingType,
+            LevelFormat,
+            PageBreak,
+          } = docx;
+
+          const BLUE = "1565C0",
+            DARK = "0D1B4B",
+            GREEN = "1B5E20";
+          const bdr = { style: BorderStyle.SINGLE, size: 1, color: "BBDEFB" };
+          const borders = { top: bdr, bottom: bdr, left: bdr, right: bdr };
+          const noBdr = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+          const noBorders = {
+            top: noBdr,
+            bottom: noBdr,
+            left: noBdr,
+            right: noBdr,
+          };
+
+          const sp = (sz = 80) =>
+            new Paragraph({
+              spacing: { before: 0, after: sz },
+              children: [new TextRun("")],
+            });
+
+          const children = [];
+
+          // Title
+          children.push(
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              shading: { fill: DARK, type: ShadingType.CLEAR },
+              spacing: { before: 0, after: 0 },
+              children: [
+                new TextRun({
+                  text: "🐼 Pandas Notes for Machine Learning",
+                  font: "Arial",
+                  size: 40,
+                  bold: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              shading: { fill: BLUE, type: ShadingType.CLEAR },
+              spacing: { before: 0, after: 200 },
+              children: [
+                new TextRun({
+                  text: "Top 20 Topics — Full Explanation with Code & Output",
+                  font: "Arial",
+                  size: 22,
+                  italic: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            sp(200),
+          );
+
+          // Topics
+          for (const t of topics) {
+            // Header
+            children.push(
+              new Paragraph({
+                shading: { fill: DARK, type: ShadingType.CLEAR },
+                spacing: { before: 240, after: 0 },
+                children: [
+                  new TextRun({
+                    text: `  ${String(t.num).padStart(2, "0")}. ${t.title}`,
+                    font: "Arial",
+                    size: 28,
+                    bold: true,
+                    color: "FFFFFF",
+                  }),
+                ],
+              }),
+              new Paragraph({
+                shading: { fill: "1A237E", type: ShadingType.CLEAR },
+                spacing: { before: 0, after: 100 },
+                children: [
+                  new TextRun({
+                    text: `  ${t.subtitle}`,
+                    font: "Arial",
+                    size: 18,
+                    italic: true,
+                    color: "BBDEFB",
+                  }),
+                ],
+              }),
+            );
+
+            // What is
+            children.push(
+              new Paragraph({
+                spacing: { before: 80, after: 40 },
+                children: [
+                  new TextRun({
+                    text: "📌 What Is It",
+                    font: "Arial",
+                    size: 20,
+                    bold: true,
+                    color: BLUE,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                spacing: { before: 0, after: 80 },
+                border: {
+                  left: {
+                    style: BorderStyle.SINGLE,
+                    size: 8,
+                    color: "F7B731",
+                    space: 6,
+                  },
+                },
+                children: [
+                  new TextRun({
+                    text: "  " + t.what,
+                    font: "Arial",
+                    size: 19,
+                    color: "333333",
+                  }),
+                ],
+              }),
+            );
+
+            // Methods
+            children.push(
+              new Paragraph({
+                spacing: { before: 40, after: 40 },
+                children: [
+                  new TextRun({
+                    text: "🔧 Key Methods: ",
+                    font: "Arial",
+                    size: 19,
+                    bold: true,
+                    color: BLUE,
+                  }),
+                  new TextRun({
+                    text: t.methods.join("  |  "),
+                    font: "Courier New",
+                    size: 17,
+                    color: "455A64",
+                  }),
+                ],
+              }),
+            );
+
+            // Code block
+            children.push(
+              new Paragraph({
+                spacing: { before: 60, after: 40 },
+                children: [
+                  new TextRun({
+                    text: "💻 Code Example",
+                    font: "Arial",
+                    size: 19,
+                    bold: true,
+                    color: BLUE,
+                  }),
+                ],
+              }),
+            );
+
+            // Strip HTML tags from code
+            const rawCode = t.code.replace(/<[^>]+>/g, "");
+            const codeLines = rawCode.split("\n");
+
+            children.push(
+              new Table({
+                width: { size: 9360, type: WidthType.DXA },
+                columnWidths: [9360],
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        borders: {
+                          top: {
+                            style: BorderStyle.SINGLE,
+                            size: 4,
+                            color: "455A64",
+                          },
+                          bottom: {
+                            style: BorderStyle.SINGLE,
+                            size: 4,
+                            color: "455A64",
+                          },
+                          left: {
+                            style: BorderStyle.SINGLE,
+                            size: 12,
+                            color: BLUE,
+                          },
+                          right: {
+                            style: BorderStyle.SINGLE,
+                            size: 4,
+                            color: "455A64",
+                          },
+                        },
+                        shading: { fill: "1A2233", type: ShadingType.CLEAR },
+                        margins: { top: 80, bottom: 80, left: 140, right: 140 },
+                        children: codeLines.map(
+                          (line) =>
+                            new Paragraph({
+                              spacing: { before: 20, after: 20 },
+                              children: [
+                                new TextRun({
+                                  text: line || " ",
+                                  font: "Courier New",
+                                  size: 17,
+                                  color: "A8D8C8",
+                                }),
+                              ],
+                            }),
+                        ),
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            );
+
+            // Output
+            children.push(
+              sp(60),
+              new Paragraph({
+                spacing: { before: 0, after: 30 },
+                children: [
+                  new TextRun({
+                    text: "▶ OUTPUT",
+                    font: "Courier New",
+                    size: 16,
+                    bold: true,
+                    color: "1DD1A1",
+                  }),
+                ],
+              }),
+            );
+
+            const outLines = t.output.split("\n");
+            children.push(
+              new Table({
+                width: { size: 9360, type: WidthType.DXA },
+                columnWidths: [9360],
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        borders: {
+                          top: {
+                            style: BorderStyle.SINGLE,
+                            size: 2,
+                            color: "1E2A3A",
+                          },
+                          bottom: {
+                            style: BorderStyle.SINGLE,
+                            size: 2,
+                            color: "1E2A3A",
+                          },
+                          left: {
+                            style: BorderStyle.SINGLE,
+                            size: 6,
+                            color: "1DD1A1",
+                          },
+                          right: {
+                            style: BorderStyle.SINGLE,
+                            size: 2,
+                            color: "1E2A3A",
+                          },
+                        },
+                        shading: { fill: "0A0E14", type: ShadingType.CLEAR },
+                        margins: { top: 60, bottom: 60, left: 120, right: 120 },
+                        children: outLines.map(
+                          (line) =>
+                            new Paragraph({
+                              spacing: { before: 16, after: 16 },
+                              children: [
+                                new TextRun({
+                                  text: line || " ",
+                                  font: "Courier New",
+                                  size: 16,
+                                  color: "8BE9FD",
+                                }),
+                              ],
+                            }),
+                        ),
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            );
+
+            // ML Use
+            children.push(
+              sp(60),
+              new Table({
+                width: { size: 9360, type: WidthType.DXA },
+                columnWidths: [9360],
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        borders,
+                        shading: { fill: "E8F5E9", type: ShadingType.CLEAR },
+                        margins: { top: 80, bottom: 80, left: 140, right: 140 },
+                        children: [
+                          new Paragraph({
+                            spacing: { before: 0, after: 0 },
+                            children: [
+                              new TextRun({
+                                text: "🤖 ML Use: ",
+                                font: "Arial",
+                                size: 18,
+                                bold: true,
+                                color: GREEN,
+                              }),
+                              new TextRun({
+                                text: t.ml,
+                                font: "Arial",
+                                size: 18,
+                                color: "1B5E20",
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              sp(160),
+            );
+          }
+
+          // Summary Table
+          children.push(
+            new Paragraph({
+              shading: { fill: DARK, type: ShadingType.CLEAR },
+              spacing: { before: 200, after: 0 },
+              children: [
+                new TextRun({
+                  text: "  📋 Quick Reference Summary — All 20 Topics",
+                  font: "Arial",
+                  size: 26,
+                  bold: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            sp(80),
+          );
+
+          const summaryRows = [
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders,
+                  shading: { fill: BLUE, type: ShadingType.CLEAR },
+                  width: { size: 500, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "#",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders,
+                  shading: { fill: BLUE, type: ShadingType.CLEAR },
+                  width: { size: 2000, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "Topic",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders,
+                  shading: { fill: BLUE, type: ShadingType.CLEAR },
+                  width: { size: 2300, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "Key Methods",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders,
+                  shading: { fill: BLUE, type: ShadingType.CLEAR },
+                  width: { size: 4560, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "ML Application",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            ...topics.map(
+              (t, i) =>
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      borders,
+                      shading: {
+                        fill: i % 2 === 0 ? "FFFFFF" : "E3F2FD",
+                        type: ShadingType.CLEAR,
+                      },
+                      width: { size: 500, type: WidthType.DXA },
+                      margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: String(t.num),
+                              font: "Arial",
+                              size: 16,
+                              bold: true,
+                              color: BLUE,
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    new TableCell({
+                      borders,
+                      shading: {
+                        fill: i % 2 === 0 ? "FFFFFF" : "E3F2FD",
+                        type: ShadingType.CLEAR,
+                      },
+                      width: { size: 2000, type: WidthType.DXA },
+                      margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: t.title,
+                              font: "Arial",
+                              size: 16,
+                              bold: true,
+                              color: "222222",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    new TableCell({
+                      borders,
+                      shading: {
+                        fill: i % 2 === 0 ? "FFFFFF" : "E3F2FD",
+                        type: ShadingType.CLEAR,
+                      },
+                      width: { size: 2300, type: WidthType.DXA },
+                      margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: t.methods.slice(0, 3).join(", "),
+                              font: "Courier New",
+                              size: 15,
+                              color: "1565C0",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    new TableCell({
+                      borders,
+                      shading: {
+                        fill: i % 2 === 0 ? "FFFFFF" : "E3F2FD",
+                        type: ShadingType.CLEAR,
+                      },
+                      width: { size: 4560, type: WidthType.DXA },
+                      margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: t.ml.substring(0, 120),
+                              font: "Arial",
+                              size: 15,
+                              color: "333333",
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+            ),
+          ];
+
+          children.push(
+            new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [500, 2000, 2300, 4560],
+              rows: summaryRows,
+            }),
+          );
+
+          const doc = new Document({
+            styles: {
+              default: { document: { run: { font: "Arial", size: 20 } } },
+              paragraphStyles: [
+                {
+                  id: "Heading1",
+                  name: "Heading 1",
+                  basedOn: "Normal",
+                  next: "Normal",
+                  quickFormat: true,
+                  run: { size: 32, bold: true, font: "Arial", color: DARK },
+                  paragraph: {
+                    spacing: { before: 240, after: 160 },
+                    outlineLevel: 0,
+                  },
+                },
+              ],
+            },
+            sections: [
+              {
+                properties: {
+                  page: {
+                    size: { width: 12240, height: 15840 },
+                    margin: {
+                      top: 1000,
+                      right: 1000,
+                      bottom: 1000,
+                      left: 1000,
+                    },
+                  },
+                },
+                children,
+              },
+            ],
+          });
+
+          const buffer = await Packer.toBuffer(doc);
+          const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "pandas_notes_ml.docx";
+          a.click();
+          URL.revokeObjectURL(url);
+
+          const toast = document.getElementById("toast");
+          toast.textContent = "✅ pandas_notes_ml.docx saved!";
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 3000);
+        } catch (err) {
+          console.error(err);
+          alert("Error: " + err.message);
+        } finally {
+          btn.innerHTML = '<span class="save-icon">💾</span> Save as .docx';
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>

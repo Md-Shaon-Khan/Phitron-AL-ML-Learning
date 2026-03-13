@@ -1,0 +1,2748 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matplotlib Notes for ML</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0f1e;
+        --surface: #111827;
+        --surface2: #1a2235;
+        --surface3: #1e2d40;
+        --border: #1f2d3d;
+        --border2: #2a3a50;
+        --accent: #38bdf8;
+        --accent2: #fb923c;
+        --accent3: #a78bfa;
+        --accent4: #34d399;
+        --accent5: #f472b6;
+        --text: #e2e8f0;
+        --text-muted: #64748b;
+        --text-dim: #94a3b8;
+        --code-bg: #050810;
+        --yellow: #fbbf24;
+        --red: #f87171;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      /* ── TOPBAR ── */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(10, 15, 30, 0.95);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border2);
+        padding: 0 40px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .topbar-brand .logo {
+        font-size: 24px;
+      }
+      .topbar-brand h1 {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent) 0%,
+          var(--accent3) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .topbar-brand p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 1px;
+      }
+      .topbar-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .badge {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--text-dim);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+
+      .btn-save {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          var(--accent3) 100%
+        );
+        color: #0a0f1e;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+      }
+      .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 36px rgba(56, 189, 248, 0.45);
+      }
+      .btn-save:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* ── PROGRESS ── */
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        z-index: 999;
+        background: transparent;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--accent),
+          var(--accent3),
+          var(--accent5)
+        );
+        width: 0%;
+        transition: width 0.1s;
+      }
+
+      /* ── LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: calc(100vh - 64px);
+      }
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        position: sticky;
+        top: 64px;
+        height: calc(100vh - 64px);
+        overflow-y: auto;
+        border-right: 1px solid var(--border2);
+        padding: 20px 0;
+        background: var(--surface);
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 3px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 2px;
+      }
+
+      .sidebar-group-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 12px 20px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 20px;
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        font-size: 13.5px;
+        color: var(--text-dim);
+        transition: all 0.15s;
+      }
+      .nav-item:hover {
+        background: var(--surface2);
+        color: var(--text);
+        border-left-color: var(--accent);
+      }
+      .nav-item.active {
+        background: rgba(56, 189, 248, 0.07);
+        color: var(--accent);
+        border-left-color: var(--accent);
+        font-weight: 600;
+      }
+      .nav-num {
+        min-width: 26px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface2);
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+      .nav-item.active .nav-num {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--accent);
+      }
+
+      /* ── MAIN ── */
+      .main {
+        padding: 44px 52px;
+        overflow-x: hidden;
+      }
+
+      /* ── TOPIC CARD ── */
+      .topic-card {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 20px;
+        margin-bottom: 60px;
+        overflow: hidden;
+      }
+      .topic-card:hover {
+        border-color: rgba(56, 189, 248, 0.25);
+      }
+
+      .topic-header {
+        padding: 30px 36px 24px;
+        background: linear-gradient(
+          135deg,
+          var(--surface2) 0%,
+          var(--surface) 100%
+        );
+        border-bottom: 1px solid var(--border2);
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+      }
+      .topic-badge {
+        background: linear-gradient(135deg, var(--accent), var(--accent3));
+        color: #0a0f1e;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .topic-title h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 5px;
+        letter-spacing: -0.3px;
+      }
+      .topic-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+      .ml-badge {
+        margin-left: auto;
+        flex-shrink: 0;
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: var(--accent4);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        margin-top: 4px;
+      }
+
+      .topic-body {
+        padding: 32px 36px;
+      }
+
+      /* ── SECTION LABELS ── */
+      .sec-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sec-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border2);
+      }
+
+      /* ── WHAT IS ── */
+      .what-is {
+        font-size: 15.5px;
+        line-height: 1.85;
+        color: var(--text-dim);
+        padding: 18px 22px;
+        background: rgba(56, 189, 248, 0.04);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        margin-bottom: 28px;
+      }
+
+      /* ── METHODS ── */
+      .methods-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 28px;
+      }
+      .mtag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12.5px;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--accent3);
+        padding: 5px 12px;
+        border-radius: 6px;
+        transition: all 0.15s;
+      }
+      .mtag:hover {
+        border-color: var(--accent3);
+        background: rgba(167, 139, 250, 0.08);
+      }
+
+      /* ── EXAMPLE BLOCK ── */
+      .example-block {
+        margin-bottom: 32px;
+      }
+      .example-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+      }
+      .example-title::before {
+        content: "◆";
+        font-size: 9px;
+      }
+
+      /* ── CODE ── */
+      .code-wrap {
+        background: var(--code-bg);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      .code-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 16px;
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border2);
+      }
+      .code-dots {
+        display: flex;
+        gap: 5px;
+      }
+      .code-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .code-dot:nth-child(1) {
+        background: #ff5f57;
+      }
+      .code-dot:nth-child(2) {
+        background: #ffbd2e;
+      }
+      .code-dot:nth-child(3) {
+        background: #28ca41;
+      }
+      .code-lang {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      pre {
+        padding: 20px 22px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.75;
+        color: var(--text);
+      }
+      pre::-webkit-scrollbar {
+        height: 4px;
+      }
+      pre::-webkit-scrollbar-thumb {
+        background: var(--border2);
+      }
+
+      /* syntax */
+      .kw {
+        color: #c792ea;
+      }
+      .fn {
+        color: #82aaff;
+      }
+      .st {
+        color: #c3e88d;
+      }
+      .cm {
+        color: #546e7a;
+        font-style: italic;
+      }
+      .nm {
+        color: #f78c6c;
+      }
+      .op {
+        color: #89ddff;
+      }
+      .df {
+        color: #ffcb6b;
+      }
+      .bi {
+        color: #80cbc4;
+      }
+      .dec {
+        color: #ff5370;
+      }
+      .at {
+        color: #f07178;
+      }
+
+      /* ── OUTPUT ── */
+      .out-wrap {
+        background: #030508;
+        border: 1px solid #0d1829;
+        border-left: 3px solid var(--accent4);
+        border-radius: 0 10px 10px 0;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+      }
+      .out-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--accent4);
+        letter-spacing: 1.5px;
+        margin-bottom: 8px;
+      }
+      .out-wrap pre {
+        padding: 0;
+        font-size: 13px;
+        color: #67e8f9;
+      }
+
+      /* ── ML USE ── */
+      .ml-use-box {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: linear-gradient(
+          135deg,
+          rgba(52, 211, 153, 0.07),
+          rgba(52, 211, 153, 0.03)
+        );
+        border: 1px solid rgba(52, 211, 153, 0.2);
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-top: 8px;
+      }
+      .ml-icon {
+        font-size: 22px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .ml-content strong {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent4);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .ml-content p {
+        font-size: 14.5px;
+        color: #86efac;
+        line-height: 1.7;
+      }
+
+      /* ── SUMMARY ── */
+      .summary-card {
+        background: var(--surface);
+        border: 1px solid rgba(167, 139, 250, 0.3);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 40px;
+      }
+      .summary-head {
+        background: linear-gradient(
+          135deg,
+          rgba(167, 139, 250, 0.12),
+          rgba(56, 189, 248, 0.08)
+        );
+        padding: 26px 36px;
+        border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+      }
+      .summary-head h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--accent3);
+      }
+      .sum-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .sum-table th {
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 14px 20px;
+        text-align: left;
+        border-bottom: 1px solid var(--border2);
+      }
+      .sum-table td {
+        padding: 13px 20px;
+        font-size: 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .sum-table tr:last-child td {
+        border-bottom: none;
+      }
+      .sum-table tr:hover td {
+        background: rgba(255, 255, 255, 0.015);
+      }
+      .sum-table td:first-child {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent3);
+        width: 36px;
+      }
+      .sum-table td:nth-child(2) {
+        font-weight: 700;
+        color: var(--text);
+        width: 200px;
+      }
+      .sum-table td:nth-child(3) {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--accent);
+        width: 220px;
+      }
+      .sum-table td:nth-child(4) {
+        color: var(--text-dim);
+        font-size: 13.5px;
+        line-height: 1.5;
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        background: var(--surface);
+        border: 1px solid var(--accent4);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent4);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.5),
+          0 0 20px rgba(52, 211, 153, 0.15);
+        transform: translateY(80px);
+        opacity: 0;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 999;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .main {
+          padding: 24px 18px;
+        }
+        .topbar {
+          padding: 0 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="logo">📊</span>
+        <div>
+          <h1>Matplotlib Notes for ML</h1>
+          <p>Top 20 Topics — Full Examples with Output</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge">20 Topics</span>
+        <button class="btn-save" onclick="saveAsDocx()">
+          💾 Save as .docx
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar">
+        <div class="sidebar-group-label">Topics</div>
+        <div id="navList"></div>
+      </nav>
+      <main class="main">
+        <div id="topicsContainer"></div>
+        <div class="summary-card" id="summaryCard">
+          <div class="summary-head">
+            <h2>📋 Complete Summary — All 20 Topics</h2>
+          </div>
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Topic</th>
+                <th>Key Functions</th>
+                <th>ML Use</th>
+              </tr>
+            </thead>
+            <tbody id="sumBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast">✅ matplotlib_notes.docx saved!</div>
+
+    <script>
+      const TOPICS = [
+        {
+          num: 1,
+          title: "Basic Plot Setup",
+          subtitle: "Figure, Axes তৈরি এবং plt.show() — সব কিছুর শুরু",
+          mlBadge: "★ Most Used",
+          methods: [
+            "plt.figure()",
+            "plt.subplots()",
+            "fig.set_size_inches()",
+            "plt.show()",
+            "plt.savefig()",
+            "plt.style.use()",
+            "plt.close()",
+          ],
+          what: "Matplotlib-এ সব কিছু Figure দিয়ে শুরু। Figure হলো canvas — যেখানে সব plot আঁকা হয়। Axes হলো সেই canvas-এর ভেতরে actual plot area। plt.subplots() দিয়ে figure ও axes একসাথে তৈরি করা best practice। ML-এ training curves, confusion matrix, feature importance — সব কিছু এই setup দিয়ে শুরু।",
+          examples: [
+            {
+              title: "Example 1 — Simple Figure তৈরি ও Save",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Figure এবং Axes একসাথে তৈরি</span>
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">8</span>, <span class="nm">5</span>))
+
+x = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">100</span>)
+y = np.<span class="fn">sin</span>(x)
+
+ax.<span class="fn">plot</span>(x, y, color=<span class="st">'steelblue'</span>, linewidth=<span class="nm">2</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Basic Sine Wave'</span>, fontsize=<span class="nm">16</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'X Axis'</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="st">'Y Axis'</span>)
+
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">savefig</span>(<span class="st">'plot.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)
+plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Figure size:"</span>, fig.get_size_inches())`,
+              ],
+              output: `Figure size: [8. 5.]
+→ plot.png saved (800×500 pixels at 150dpi)`,
+            },
+            {
+              title: "Example 2 — Dark Style ও Multiple Subplots",
+              code: [
+                `plt.style.<span class="fn">use</span>(<span class="st">'dark_background'</span>)
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">3</span>, figsize=(<span class="nm">15</span>, <span class="nm">4</span>))
+
+titles = [<span class="st">'Training Loss'</span>, <span class="st">'Validation Loss'</span>, <span class="st">'Accuracy'</span>]
+colors = [<span class="st">'#38bdf8'</span>, <span class="st">'#fb923c'</span>, <span class="st">'#34d399'</span>]
+
+<span class="kw">for</span> i, (ax, title, color) <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="fn">zip</span>(axes, titles, colors)):
+    ax.<span class="fn">plot</span>(np.<span class="fn">random.rand</span>(<span class="nm">50</span>), color=color, lw=<span class="nm">2</span>)
+    ax.<span class="fn">set_title</span>(title, color=color, fontweight=<span class="st">'bold'</span>)
+    ax.<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>)
+
+fig.<span class="fn">suptitle</span>(<span class="st">'Model Training Dashboard'</span>, fontsize=<span class="nm">16</span>, y=<span class="nm">1.02</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Available styles:"</span>, plt.style.<span class="fn">available</span>[:<span class="nm">5</span>])`,
+              ],
+              output: `Available styles: ['Solarize_Light2', '_classic_test_patch', '_mpl-gallery',
+ '_mpl-gallery-nogrid', 'bmh']`,
+            },
+          ],
+          ml: "ML-এ প্রতিটি visualization এই setup দিয়ে শুরু। figsize=(10,6) standard size। savefig() দিয়ে report-এ include করার জন্য save। plt.style.use('seaborn') দিয়ে publication-ready plot।",
+        },
+
+        {
+          num: 2,
+          title: "Line Plot",
+          subtitle: "Training/Validation curves — ML-এ সবচেয়ে বেশি ব্যবহৃত",
+          mlBadge: "★ Most Used",
+          methods: [
+            "ax.plot()",
+            "linestyle=",
+            "marker=",
+            "linewidth=",
+            "alpha=",
+            "label=",
+            "ax.legend()",
+          ],
+          what: "Line plot হলো ML-এর সবচেয়ে common visualization। Training curve (loss vs epoch, accuracy vs epoch) দেখতে সবসময় line plot ব্যবহার হয়। একই axes-এ multiple lines দিয়ে train vs validation comparison করা যায়।",
+          examples: [
+            {
+              title: "Example 1 — Training vs Validation Loss Curve",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">51</span>)
+train_loss = <span class="nm">2.5</span> * np.<span class="fn">exp</span>(-<span class="nm">0.1</span> * epochs) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>) * <span class="nm">0.05</span>
+val_loss   = <span class="nm">2.8</span> * np.<span class="fn">exp</span>(-<span class="nm">0.08</span>* epochs) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>) * <span class="nm">0.08</span>
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+
+ax.<span class="fn">plot</span>(epochs, train_loss, label=<span class="st">'Train Loss'</span>, color=<span class="st">'#38bdf8'</span>,
+        linewidth=<span class="nm">2.5</span>, linestyle=<span class="st">'-'</span>)
+ax.<span class="fn">plot</span>(epochs, val_loss,   label=<span class="st">'Val Loss'</span>,   color=<span class="st">'#fb923c'</span>,
+        linewidth=<span class="nm">2.5</span>, linestyle=<span class="st">'--'</span>)
+
+<span class="cm"># Best epoch mark</span>
+best = np.<span class="fn">argmin</span>(val_loss)
+ax.<span class="fn">axvline</span>(x=best+<span class="nm">1</span>, color=<span class="st">'#34d399'</span>, linestyle=<span class="st">':'</span>, label=<span class="st">f'Best Epoch {best+1}'</span>)
+
+ax.<span class="fn">set_title</span>(<span class="st">'Training vs Validation Loss'</span>, fontsize=<span class="nm">16</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>, fontsize=<span class="nm">13</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="st">'Loss'</span>, fontsize=<span class="nm">13</span>)
+ax.<span class="fn">legend</span>(fontsize=<span class="nm">12</span>)
+ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.3</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Best Epoch: {best+1}, Val Loss: {val_loss[best]:.4f}"</span>)`,
+              ],
+              output: `Best Epoch: 47, Val Loss: 0.1823`,
+            },
+            {
+              title: "Example 2 — Multiple Metrics একসাথে (Dual Y-axis)",
+              code: [
+                `fig, ax1 = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+ax2 = ax1.<span class="fn">twinx</span>()   <span class="cm"># Second y-axis share same x</span>
+
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">51</span>)
+loss = <span class="nm">3.0</span> * np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs) + <span class="nm">0.1</span>
+acc  = <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs) * <span class="nm">0.9</span>
+
+l1, = ax1.<span class="fn">plot</span>(epochs, loss, color=<span class="st">'#f87171'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'Loss'</span>)
+l2, = ax2.<span class="fn">plot</span>(epochs, acc,  color=<span class="st">'#34d399'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'Accuracy'</span>)
+
+ax1.<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>, fontsize=<span class="nm">13</span>)
+ax1.<span class="fn">set_ylabel</span>(<span class="st">'Loss'</span>, color=<span class="st">'#f87171'</span>, fontsize=<span class="nm">13</span>)
+ax2.<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>, color=<span class="st">'#34d399'</span>, fontsize=<span class="nm">13</span>)
+ax1.<span class="fn">set_title</span>(<span class="st">'Loss & Accuracy — Dual Axis'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">legend</span>(handles=[l1, l2], loc=<span class="st">'center right'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Final Loss: {loss[-1]:.3f} | Final Acc: {acc[-1]:.3f}"</span>)`,
+              ],
+              output: `Final Loss: 0.122 | Final Acc: 0.941`,
+            },
+          ],
+          ml: "Neural network-এর training curve visualize করা। Overfitting detect করতে train vs val loss compare। Learning rate schedule effect দেখতে। Early stopping point চিহ্নিত করতে।",
+        },
+
+        {
+          num: 3,
+          title: "Scatter Plot",
+          subtitle: "Data distribution ও cluster দেখানো",
+          mlBadge: "★ Most Used",
+          methods: [
+            "ax.scatter()",
+            "c=",
+            "cmap=",
+            "s=",
+            "alpha=",
+            "plt.colorbar()",
+            "edgecolors=",
+          ],
+          what: "Scatter plot দিয়ে দুটি feature-এর relationship দেখা যায়। ML-এ classification result visualize করতে (class অনুযায়ী color), clustering result দেখাতে, এবং dimensionality reduction (PCA, t-SNE) output দেখাতে scatter plot সবচেয়ে বেশি ব্যবহৃত।",
+          examples: [
+            {
+              title: "Example 1 — Classification Result Visualization",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">0</span>)
+<span class="cm"># 3 class dataset simulate</span>
+classes = <span class="nm">3</span>
+X, y = [], []
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(classes):
+    X.<span class="fn">append</span>(np.random.<span class="fn">randn</span>(<span class="nm">80</span>, <span class="nm">2</span>) + [i*<span class="nm">3</span>, i*<span class="nm">2</span>])
+    y.<span class="fn">append</span>(np.<span class="fn">full</span>(<span class="nm">80</span>, i))
+X = np.<span class="fn">vstack</span>(X); y = np.<span class="fn">hstack</span>(y)
+
+colors = [<span class="st">'#38bdf8'</span>, <span class="st">'#fb923c'</span>, <span class="st">'#34d399'</span>]
+labels = [<span class="st">'Class 0'</span>, <span class="st">'Class 1'</span>, <span class="st">'Class 2'</span>]
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">8</span>, <span class="nm">6</span>))
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(classes):
+    mask = y == i
+    ax.<span class="fn">scatter</span>(X[mask, <span class="nm">0</span>], X[mask, <span class="nm">1</span>],
+                c=colors[i], label=labels[i],
+                alpha=<span class="nm">0.7</span>, s=<span class="nm">60</span>, edgecolors=<span class="st">'white'</span>, linewidth=<span class="nm">0.5</span>)
+
+ax.<span class="fn">set_title</span>(<span class="st">'Classification — 3 Classes'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">legend</span>(fontsize=<span class="nm">12</span>); ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Points per class:"</span>, [<span class="fn">sum</span>(y==i) <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(classes)])`,
+              ],
+              output: `Points per class: [80, 80, 80]`,
+            },
+            {
+              title: "Example 2 — t-SNE / PCA Output (Continuous Color)",
+              code: [
+                `fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">5</span>))
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+X = np.random.<span class="fn">randn</span>(<span class="nm">300</span>, <span class="nm">2</span>)
+confidence = np.<span class="fn">sqrt</span>(X[:,<span class="nm">0</span>]**<span class="nm">2</span> + X[:,<span class="nm">1</span>]**<span class="nm">2</span>)  <span class="cm"># distance as color</span>
+sizes = confidence * <span class="nm">40</span> + <span class="nm">20</span>                   <span class="cm"># size = confidence</span>
+
+<span class="cm"># Left: continuous colormap</span>
+sc = axes[<span class="nm">0</span>].<span class="fn">scatter</span>(X[:,<span class="nm">0</span>], X[:,<span class="nm">1</span>], c=confidence,
+                      cmap=<span class="st">'plasma'</span>, s=sizes, alpha=<span class="nm">0.8</span>)
+plt.<span class="fn">colorbar</span>(sc, ax=axes[<span class="nm">0</span>], label=<span class="st">'Confidence'</span>)
+axes[<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Prediction Confidence'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># Right: bubble chart (3rd variable as size)</span>
+axes[<span class="nm">1</span>].<span class="fn">scatter</span>(X[:<span class="nm">50</span>,<span class="nm">0</span>], X[:<span class="nm">50</span>,<span class="nm">1</span>], s=confidence[:<span class="nm">50</span>]*<span class="nm">100</span>,
+                c=<span class="st">'#a78bfa'</span>, alpha=<span class="nm">0.6</span>, edgecolors=<span class="st">'white'</span>, lw=<span class="nm">0.5</span>)
+axes[<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Bubble Chart (size=confidence)'</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Max confidence: {confidence.max():.2f}, Min: {confidence.min():.2f}"</span>)`,
+              ],
+              output: `Max confidence: 3.17, Min: 0.03`,
+            },
+          ],
+          ml: "PCA/t-SNE দিয়ে dimensionality reduction-এর পর data distribution দেখা। Clustering result visualize করা। Classification decision boundary visualize করার আগে data দেখা।",
+        },
+
+        {
+          num: 4,
+          title: "Bar Chart & Histogram",
+          subtitle: "Feature importance ও data distribution",
+          mlBadge: "★ Most Used",
+          methods: [
+            "ax.bar()",
+            "ax.barh()",
+            "ax.hist()",
+            "bins=",
+            "density=",
+            "ax.bar_label()",
+            "rwidth=",
+            "stacked=",
+          ],
+          what: "Bar chart দিয়ে categorical data compare করা হয়। Histogram দিয়ে continuous data-এর distribution দেখা হয়। ML-এ feature importance bar chart ও target class distribution histogram সবচেয়ে বেশি দেখানো হয়।",
+          examples: [
+            {
+              title: "Example 1 — Feature Importance Bar Chart",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+features = [<span class="st">'Age'</span>, <span class="st">'Income'</span>, <span class="st">'Score'</span>, <span class="st">'Tenure'</span>, <span class="st">'Purchases'</span>,
+            <span class="st">'Clicks'</span>, <span class="st">'Returns'</span>, <span class="st">'Category'</span>]
+importance = np.<span class="fn">array</span>([<span class="nm">0.25</span>, <span class="nm">0.20</span>, <span class="nm">0.18</span>, <span class="nm">0.14</span>, <span class="nm">0.10</span>, <span class="nm">0.07</span>, <span class="nm">0.04</span>, <span class="nm">0.02</span>])
+
+<span class="cm"># Sort descending</span>
+idx = np.<span class="fn">argsort</span>(importance)[:<span class="st">:-1</span>]
+features_s = [features[i] <span class="kw">for</span> i <span class="kw">in</span> idx]
+importance_s = importance[idx]
+colors = plt.cm.<span class="fn">Blues</span>(np.<span class="fn">linspace</span>(<span class="nm">0.4</span>, <span class="nm">1.0</span>, <span class="fn">len</span>(features)))[::<span class="nm">-1</span>]
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+bars = ax.<span class="fn">bar</span>(features_s, importance_s, color=colors, edgecolor=<span class="st">'white'</span>, width=<span class="nm">0.6</span>)
+ax.<span class="fn">bar_label</span>(bars, fmt=<span class="st">'%.2f'</span>, fontsize=<span class="nm">11</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Feature Importance (Random Forest)'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="st">'Importance Score'</span>)
+ax.<span class="fn">set_ylim</span>(<span class="nm">0</span>, <span class="nm">0.32</span>)
+ax.<span class="fn">grid</span>(axis=<span class="st">'y'</span>, alpha=<span class="nm">0.3</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Top feature: {features_s[0]} ({importance_s[0]:.0%})"</span>)`,
+              ],
+              output: `Top feature: Age (25%)`,
+            },
+            {
+              title: "Example 2 — Distribution Histogram + Class Overlap",
+              code: [
+                `np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+<span class="cm"># Two class distributions</span>
+class0 = np.random.<span class="fn">normal</span>(<span class="nm">50</span>, <span class="nm">10</span>, <span class="nm">500</span>)
+class1 = np.random.<span class="fn">normal</span>(<span class="nm">65</span>, <span class="nm">12</span>, <span class="nm">500</span>)
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">5</span>))
+
+<span class="cm"># Overlapping histogram (class separation)</span>
+axes[<span class="nm">0</span>].<span class="fn">hist</span>(class0, bins=<span class="nm">30</span>, alpha=<span class="nm">0.6</span>, color=<span class="st">'#38bdf8'</span>, label=<span class="st">'Class 0'</span>, density=<span class="kw">True</span>)
+axes[<span class="nm">0</span>].<span class="fn">hist</span>(class1, bins=<span class="nm">30</span>, alpha=<span class="nm">0.6</span>, color=<span class="st">'#fb923c'</span>, label=<span class="st">'Class 1'</span>, density=<span class="kw">True</span>)
+axes[<span class="nm">0</span>].<span class="fn">axvline</span>(class0.<span class="fn">mean</span>(), color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2</span>, linestyle=<span class="st">'--'</span>)
+axes[<span class="nm">0</span>].<span class="fn">axvline</span>(class1.<span class="fn">mean</span>(), color=<span class="st">'#fb923c'</span>, lw=<span class="nm">2</span>, linestyle=<span class="st">'--'</span>)
+axes[<span class="nm">0</span>].<span class="fn">legend</span>(); axes[<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Class Distribution Overlap'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># Stacked bar — class count per group</span>
+groups = [<span class="st">'G1'</span>,<span class="st">'G2'</span>,<span class="st">'G3'</span>,<span class="st">'G4'</span>]
+c0 = [<span class="nm">30</span>,<span class="nm">45</span>,<span class="nm">20</span>,<span class="nm">55</span>]; c1 = [<span class="nm">70</span>,<span class="nm">55</span>,<span class="nm">80</span>,<span class="nm">45</span>]
+x = np.<span class="fn">arange</span>(<span class="fn">len</span>(groups))
+axes[<span class="nm">1</span>].<span class="fn">bar</span>(x, c0, label=<span class="st">'Class 0'</span>, color=<span class="st">'#38bdf8'</span>)
+axes[<span class="nm">1</span>].<span class="fn">bar</span>(x, c1, bottom=c0, label=<span class="st">'Class 1'</span>, color=<span class="st">'#fb923c'</span>)
+axes[<span class="nm">1</span>].<span class="fn">set_xticks</span>(x); axes[<span class="nm">1</span>].<span class="fn">set_xticklabels</span>(groups)
+axes[<span class="nm">1</span>].<span class="fn">legend</span>(); axes[<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Stacked Bar — Class per Group'</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Class 0 mean: {class0.mean():.1f} | Class 1 mean: {class1.mean():.1f}"</span>)`,
+              ],
+              output: `Class 0 mean: 49.9 | Class 1 mean: 65.0`,
+            },
+          ],
+          ml: "Feature importance rank দেখানো (Random Forest, XGBoost)। Target class imbalance দেখা। Feature distribution visualize করে outlier ও skewness detect করা।",
+        },
+
+        {
+          num: 5,
+          title: "Heatmap (imshow / pcolor)",
+          subtitle: "Confusion Matrix ও Correlation Matrix",
+          mlBadge: "★ Most Used",
+          methods: [
+            "ax.imshow()",
+            "plt.colorbar()",
+            "ax.pcolor()",
+            "seaborn.heatmap()",
+            "cmap=",
+            "vmin/vmax=",
+            "ax.text() annotations",
+          ],
+          what: "Heatmap দিয়ে 2D matrix visualize করা হয়। ML-এ confusion matrix এবং feature correlation matrix দেখানো সবচেয়ে important use case। imshow() দিয়ে matrix plot করা যায় এবং colorbar দিয়ে value scale বোঝা যায়।",
+          examples: [
+            {
+              title: "Example 1 — Confusion Matrix Heatmap",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Confusion matrix (4 classes)</span>
+cm = np.<span class="fn">array</span>([
+    [<span class="nm">85</span>, <span class="nm">5</span>,  <span class="nm">2</span>,  <span class="nm">8</span>],
+    [<span class="nm">3</span>,  <span class="nm">90</span>, <span class="nm">4</span>,  <span class="nm">3</span>],
+    [<span class="nm">6</span>,  <span class="nm">2</span>,  <span class="nm">88</span>, <span class="nm">4</span>],
+    [<span class="nm">4</span>,  <span class="nm">3</span>,  <span class="nm">5</span>,  <span class="nm">88</span>]
+])
+class_names = [<span class="st">'Cat'</span>, <span class="st">'Dog'</span>, <span class="st">'Bird'</span>, <span class="st">'Fish'</span>]
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">7</span>, <span class="nm">6</span>))
+im = ax.<span class="fn">imshow</span>(cm, cmap=<span class="st">'Blues'</span>, vmin=<span class="nm">0</span>)
+plt.<span class="fn">colorbar</span>(im, ax=ax)
+
+<span class="cm"># Annotate each cell</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">4</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">4</span>):
+        color = <span class="st">'white'</span> <span class="kw">if</span> cm[i,j] > <span class="nm">50</span> <span class="kw">else</span> <span class="st">'black'</span>
+        ax.<span class="fn">text</span>(j, i, <span class="fn">str</span>(cm[i,j]), ha=<span class="st">'center'</span>, va=<span class="st">'center'</span>,
+                fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>, color=color)
+
+ax.<span class="fn">set_xticks</span>(np.<span class="fn">arange</span>(<span class="nm">4</span>)); ax.<span class="fn">set_yticks</span>(np.<span class="fn">arange</span>(<span class="nm">4</span>))
+ax.<span class="fn">set_xticklabels</span>(class_names, fontsize=<span class="nm">12</span>)
+ax.<span class="fn">set_yticklabels</span>(class_names, fontsize=<span class="nm">12</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'Predicted'</span>, fontsize=<span class="nm">13</span>); ax.<span class="fn">set_ylabel</span>(<span class="st">'Actual'</span>, fontsize=<span class="nm">13</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Confusion Matrix'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+accuracy = np.<span class="fn">trace</span>(cm) / cm.<span class="fn">sum</span>()
+<span class="fn">print</span>(<span class="st">f"Overall Accuracy: {accuracy:.1%}"</span>)`,
+              ],
+              output: `Overall Accuracy: 87.8%`,
+            },
+            {
+              title: "Example 2 — Feature Correlation Heatmap",
+              code: [
+                `np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+n_features = <span class="nm">6</span>
+feature_names = [<span class="st">'Age'</span>,<span class="st">'Income'</span>,<span class="st">'Score'</span>,<span class="st">'Tenure'</span>,<span class="st">'Clicks'</span>,<span class="st">'Returns'</span>]
+
+<span class="cm"># Simulate correlation matrix</span>
+data = np.random.<span class="fn">randn</span>(<span class="nm">200</span>, n_features)
+corr = np.<span class="fn">corrcoef</span>(data.T)
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">8</span>, <span class="nm">7</span>))
+im = ax.<span class="fn">imshow</span>(corr, cmap=<span class="st">'RdYlGn'</span>, vmin=-<span class="nm">1</span>, vmax=<span class="nm">1</span>)
+plt.<span class="fn">colorbar</span>(im, ax=ax, label=<span class="st">'Correlation'</span>)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n_features):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(n_features):
+        ax.<span class="fn">text</span>(j, i, <span class="st">f'{corr[i,j]:.2f}'</span>, ha=<span class="st">'center'</span>, va=<span class="st">'center'</span>, fontsize=<span class="nm">10</span>)
+
+ax.<span class="fn">set_xticks</span>(np.<span class="fn">arange</span>(n_features)); ax.<span class="fn">set_yticks</span>(np.<span class="fn">arange</span>(n_features))
+ax.<span class="fn">set_xticklabels</span>(feature_names, rotation=<span class="nm">45</span>, ha=<span class="st">'right'</span>)
+ax.<span class="fn">set_yticklabels</span>(feature_names)
+ax.<span class="fn">set_title</span>(<span class="st">'Feature Correlation Matrix'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Diagonal (self-correlation):"</span>, np.<span class="fn">diag</span>(corr).<span class="fn">round</span>(<span class="nm">2</span>))`,
+              ],
+              output: `Diagonal (self-correlation): [1. 1. 1. 1. 1. 1.]`,
+            },
+          ],
+          ml: "Confusion matrix classification model evaluate করতে। Correlation heatmap multicollinearity detect করতে। Attention map neural network-এ কোথায় focus করছে দেখাতে।",
+        },
+
+        {
+          num: 6,
+          title: "Subplots & Layout",
+          subtitle: "Multiple plots একসাথে সুন্দরভাবে সাজানো",
+          mlBadge: "★ Most Used",
+          methods: [
+            "plt.subplots(rows,cols)",
+            "plt.subplot2grid()",
+            "fig.add_subplot()",
+            "GridSpec",
+            "plt.tight_layout()",
+            "fig.subplots_adjust()",
+            "sharex=",
+            "sharey=",
+          ],
+          what: "Real ML report-এ একাধিক plot একসাথে দেখানো দরকার। subplots() দিয়ে grid layout, GridSpec দিয়ে unequal size layout। sharex/sharey দিয়ে axes share করলে comparison সহজ হয়।",
+          examples: [
+            {
+              title: "Example 1 — 2×2 Dashboard Layout",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">2</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">10</span>))
+
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">51</span>)
+
+<span class="cm"># [0,0] Train/Val Loss</span>
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">plot</span>(epochs, np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs)+<span class="nm">0.1</span>, label=<span class="st">'Train'</span>, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2</span>)
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">plot</span>(epochs, np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*epochs)+<span class="nm">0.15</span>, label=<span class="st">'Val'</span>, color=<span class="st">'#fb923c'</span>, lw=<span class="nm">2</span>, ls=<span class="st">'--'</span>)
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Loss Curves'</span>, fontweight=<span class="st">'bold'</span>); axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">legend</span>()
+
+<span class="cm"># [0,1] Accuracy</span>
+axes[<span class="nm">0</span>,<span class="nm">1</span>].<span class="fn">plot</span>(epochs, <span class="nm">1</span>-np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs), color=<span class="st">'#34d399'</span>, lw=<span class="nm">2</span>)
+axes[<span class="nm">0</span>,<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Accuracy'</span>, fontweight=<span class="st">'bold'</span>)
+axes[<span class="nm">0</span>,<span class="nm">1</span>].<span class="fn">set_ylim</span>(<span class="nm">0</span>, <span class="nm">1</span>)
+
+<span class="cm"># [1,0] Feature Importance</span>
+feats = [<span class="st">'F1'</span>,<span class="st">'F2'</span>,<span class="st">'F3'</span>,<span class="st">'F4'</span>,<span class="st">'F5'</span>]
+imp = [<span class="nm">0.3</span>,<span class="nm">0.25</span>,<span class="nm">0.2</span>,<span class="nm">0.15</span>,<span class="nm">0.1</span>]
+axes[<span class="nm">1</span>,<span class="nm">0</span>].<span class="fn">barh</span>(feats, imp, color=<span class="st">'#a78bfa'</span>)
+axes[<span class="nm">1</span>,<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Feature Importance'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># [1,1] Prediction distribution</span>
+axes[<span class="nm">1</span>,<span class="nm">1</span>].<span class="fn">hist</span>(np.random.<span class="fn">beta</span>(<span class="nm">2</span>,<span class="nm">5</span>,<span class="nm">500</span>), bins=<span class="nm">30</span>, color=<span class="st">'#f472b6'</span>, alpha=<span class="nm">0.8</span>)
+axes[<span class="nm">1</span>,<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Pred Probability Distribution'</span>, fontweight=<span class="st">'bold'</span>)
+
+fig.<span class="fn">suptitle</span>(<span class="st">'ML Model Dashboard'</span>, fontsize=<span class="nm">18</span>, fontweight=<span class="st">'bold'</span>, y=<span class="nm">1.01</span>)
+<span class="kw">for</span> ax <span class="kw">in</span> axes.<span class="fn">flat</span>: ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Dashboard with 4 panels created"</span>)`,
+              ],
+              output: `Dashboard with 4 panels created`,
+            },
+            {
+              title: "Example 2 — GridSpec দিয়ে Unequal Layout",
+              code: [
+                `<span class="kw">from</span> matplotlib.gridspec <span class="kw">import</span> GridSpec
+
+fig = plt.<span class="fn">figure</span>(figsize=(<span class="nm">14</span>, <span class="nm">8</span>))
+gs = <span class="fn">GridSpec</span>(<span class="nm">2</span>, <span class="nm">3</span>, figure=fig, hspace=<span class="nm">0.4</span>, wspace=<span class="nm">0.35</span>)
+
+<span class="cm"># Large plot spanning 2 columns</span>
+ax_main = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">0</span>, :<span class="nm">2</span>])
+<span class="cm"># Right small plot</span>
+ax_right = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">0</span>, <span class="nm">2</span>])
+<span class="cm"># Bottom full-width</span>
+ax_bot1 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">1</span>, <span class="nm">0</span>])
+ax_bot2 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">1</span>, <span class="nm">1</span>])
+ax_bot3 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">1</span>, <span class="nm">2</span>])
+
+x = np.<span class="fn">linspace</span>(<span class="nm">0</span>,<span class="nm">10</span>,<span class="nm">100</span>)
+ax_main.<span class="fn">plot</span>(x, np.<span class="fn">sin</span>(x), color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2</span>); ax_main.<span class="fn">set_title</span>(<span class="st">'Main Plot (wide)'</span>, fontweight=<span class="st">'bold'</span>)
+ax_right.<span class="fn">scatter</span>(*np.random.<span class="fn">randn</span>(<span class="nm">2</span>,<span class="nm">50</span>), color=<span class="st">'#fb923c'</span>, s=<span class="nm">30</span>); ax_right.<span class="fn">set_title</span>(<span class="st">'Scatter'</span>, fontweight=<span class="st">'bold'</span>)
+<span class="kw">for</span> ax, c <span class="kw">in</span> <span class="fn">zip</span>([ax_bot1,ax_bot2,ax_bot3], [<span class="st">'#a78bfa'</span>,<span class="st">'#34d399'</span>,<span class="st">'#f472b6'</span>]):
+    ax.<span class="fn">bar</span>(np.<span class="fn">arange</span>(<span class="nm">5</span>), np.random.<span class="fn">rand</span>(<span class="nm">5</span>), color=c)
+
+<span class="fn">print</span>(<span class="st">"GridSpec layout: 2×3 with merged top-left cell"</span>)`,
+              ],
+              output: `GridSpec layout: 2×3 with merged top-left cell`,
+            },
+          ],
+          ml: "ML training report-এ সব metrics একসাথে দেখানো। Model comparison dashboard তৈরি। Hyperparameter tuning result grid-এ compare করা।",
+        },
+
+        {
+          num: 7,
+          title: "Axes Customization",
+          subtitle: "Title, Label, Ticks, Grid, Spine সুন্দর করা",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.set_title()",
+            "ax.set_xlabel/ylabel()",
+            "ax.set_xlim/ylim()",
+            "ax.set_xticks()",
+            "ax.tick_params()",
+            "ax.grid()",
+            "ax.spines[]",
+            "ax.set_facecolor()",
+          ],
+          what: "Default Matplotlib plot দেখতে সুন্দর না। Proper axes customization না করলে plot publication-ready হয় না। Title, labels, tick formatting, grid, spine — এগুলো ঠিকঠাক করলে professional-quality visualization তৈরি হয়।",
+          examples: [
+            {
+              title: "Example 1 — Professional Publication-Ready Plot",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">10</span>, <span class="nm">6</span>))
+
+x = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">50</span>, <span class="nm">50</span>)
+y = <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*x) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>)*<span class="nm">0.02</span>
+
+ax.<span class="fn">plot</span>(x, y, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2.5</span>, zorder=<span class="nm">3</span>)
+
+<span class="cm"># Title and labels with proper font size</span>
+ax.<span class="fn">set_title</span>(<span class="st">'Model Accuracy Convergence'</span>, fontsize=<span class="nm">18</span>, fontweight=<span class="st">'bold'</span>, pad=<span class="nm">15</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'Training Epoch'</span>, fontsize=<span class="nm">14</span>, labelpad=<span class="nm">10</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>, fontsize=<span class="nm">14</span>, labelpad=<span class="nm">10</span>)
+
+<span class="cm"># Tick customization</span>
+ax.<span class="fn">tick_params</span>(axis=<span class="st">'both'</span>, labelsize=<span class="nm">12</span>, length=<span class="nm">5</span>, width=<span class="nm">1.2</span>)
+ax.<span class="fn">set_yticks</span>(np.<span class="fn">arange</span>(<span class="nm">0</span>, <span class="nm">1.1</span>, <span class="nm">0.2</span>))
+ax.<span class="fn">yaxis</span>.<span class="fn">set_major_formatter</span>(plt.FuncFormatter(<span class="kw">lambda</span> v, _: <span class="st">f'{v:.0%}'</span>))
+
+<span class="cm"># Clean grid</span>
+ax.<span class="fn">grid</span>(<span class="kw">True</span>, linestyle=<span class="st">'--'</span>, alpha=<span class="nm">0.4</span>, zorder=<span class="nm">0</span>)
+ax.<span class="fn">set_facecolor</span>(<span class="st">'#f8fafc'</span>)
+
+<span class="cm"># Remove top and right spines</span>
+ax.spines[<span class="st">'top'</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+ax.spines[<span class="st">'right'</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+ax.spines[<span class="st">'left'</span>].<span class="fn">set_linewidth</span>(<span class="nm">1.5</span>)
+ax.spines[<span class="st">'bottom'</span>].<span class="fn">set_linewidth</span>(<span class="nm">1.5</span>)
+
+<span class="cm"># Horizontal reference lines</span>
+ax.<span class="fn">axhline</span>(<span class="nm">0.95</span>, color=<span class="st">'red'</span>, ls=<span class="st">'--'</span>, lw=<span class="nm">1.5</span>, alpha=<span class="nm">0.7</span>, label=<span class="st">'Target 95%'</span>)
+ax.<span class="fn">legend</span>(fontsize=<span class="nm">12</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Publication-ready axes customization applied"</span>)`,
+              ],
+              output: `Publication-ready axes customization applied`,
+            },
+          ],
+          ml: "Research paper বা presentation-এর জন্য clean, professional plot তৈরি। Percentage format (0.85 → 85%), scientific notation বন্ধ করা, proper font size — সব কিছু axes customization দিয়ে।",
+        },
+
+        {
+          num: 8,
+          title: "Legend & Annotations",
+          subtitle: "Plot-এ label ও arrow দিয়ে গুরুত্বপূর্ণ অংশ highlight",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.legend()",
+            "ax.annotate()",
+            "ax.text()",
+            "ax.axvline()",
+            "ax.axhline()",
+            "ax.axvspan()",
+            "bbox_to_anchor=",
+            "arrowprops=",
+          ],
+          what: "Legend ও annotation ছাড়া complex plot বোঝা কঠিন। annotate() দিয়ে arrow সহ specific point-এ comment যোগ করা যায়। ML-এ overfitting start point, best epoch, decision boundary — এগুলো annotate করা অনেক informative।",
+          examples: [
+            {
+              title: "Example 1 — Annotated Training Curve",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">1</span>)
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">101</span>)
+train_acc = <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.05</span>*epochs) + np.random.<span class="fn">randn</span>(<span class="nm">100</span>)*<span class="nm">0.01</span>
+val_acc   = <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.04</span>*epochs) - np.<span class="fn">linspace</span>(<span class="nm">0</span>,<span class="nm">0.12</span>,<span class="nm">100</span>) + np.random.<span class="fn">randn</span>(<span class="nm">100</span>)*<span class="nm">0.01</span>
+
+best_epoch = np.<span class="fn">argmax</span>(val_acc)
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">11</span>, <span class="nm">6</span>))
+ax.<span class="fn">plot</span>(epochs, train_acc, label=<span class="st">'Train Accuracy'</span>, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2</span>)
+ax.<span class="fn">plot</span>(epochs, val_acc, label=<span class="st">'Val Accuracy'</span>, color=<span class="st">'#fb923c'</span>, lw=<span class="nm">2</span>)
+
+<span class="cm"># Mark best epoch</span>
+ax.<span class="fn">scatter</span>([best_epoch+<span class="nm">1</span>], [val_acc[best_epoch]], color=<span class="st">'#34d399'</span>, s=<span class="nm">150</span>, zorder=<span class="nm">5</span>)
+ax.<span class="fn">annotate</span>(<span class="st">f'Best Epoch {best_epoch+1}\nVal Acc={val_acc[best_epoch]:.3f}'</span>,
+            xy=(best_epoch+<span class="nm">1</span>, val_acc[best_epoch]),
+            xytext=(best_epoch+<span class="nm">12</span>, val_acc[best_epoch]-<span class="nm">0.1</span>),
+            arrowprops=<span class="fn">dict</span>(arrowstyle=<span class="st">'->'</span>, color=<span class="st">'#34d399'</span>, lw=<span class="nm">2</span>),
+            fontsize=<span class="nm">11</span>, color=<span class="st">'#34d399'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># Overfitting region shade</span>
+ax.<span class="fn">axvspan</span>(best_epoch+<span class="nm">1</span>, <span class="nm">100</span>, alpha=<span class="nm">0.08</span>, color=<span class="st">'red'</span>, label=<span class="st">'Overfitting Zone'</span>)
+ax.<span class="fn">legend</span>(fontsize=<span class="nm">12</span>, loc=<span class="st">'lower right'</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Annotated Training Curve'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Best epoch: {best_epoch+1} | Val Acc: {val_acc[best_epoch]:.4f}"</span>)`,
+              ],
+              output: `Best epoch: 41 | Val Acc: 0.8123`,
+            },
+          ],
+          ml: "Overfitting region mark করা। Best model checkpoint annotate করা। Decision threshold line দেখানো। Custom legend দিয়ে multiple model comparison-এ clarity আনা।",
+        },
+
+        {
+          num: 9,
+          title: "Color & Colormap",
+          subtitle: "Color দিয়ে information যোগ করা",
+          mlBadge: "Often Used",
+          methods: [
+            "cmap='viridis'",
+            "plt.cm.get_cmap()",
+            "matplotlib.colors.Normalize()",
+            "plt.colorbar()",
+            "ListedColormap()",
+            "BoundaryNorm()",
+            "color cycles",
+          ],
+          what: "Color শুধু সৌন্দর্যের জন্য না — এটি data-এর একটি dimension। Colormap দিয়ে continuous value (loss, probability, confidence) encode করা যায়। ML-এ prediction probability heatmap, gradient magnitude visualization-এ colormap অপরিহার্য।",
+          examples: [
+            {
+              title: "Example 1 — Decision Boundary Colormap",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> matplotlib.colors <span class="kw">import</span> ListedColormap
+
+np.random.<span class="fn">seed</span>(<span class="nm">0</span>)
+<span class="cm"># Simulate decision boundary</span>
+xx, yy = np.<span class="fn">meshgrid</span>(np.<span class="fn">linspace</span>(-<span class="nm">3</span>,<span class="nm">3</span>,<span class="nm">200</span>), np.<span class="fn">linspace</span>(-<span class="nm">3</span>,<span class="nm">3</span>,<span class="nm">200</span>))
+Z = np.<span class="fn">sin</span>(xx) * np.<span class="fn">cos</span>(yy)   <span class="cm"># Simulated model output</span>
+Z_class = (Z > <span class="nm">0</span>).<span class="fn">astype</span>(<span class="st">'int'</span>)
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">5</span>))
+
+<span class="cm"># Continuous probability</span>
+im = axes[<span class="nm">0</span>].<span class="fn">contourf</span>(xx, yy, Z, levels=<span class="nm">50</span>, cmap=<span class="st">'RdYlGn'</span>)
+plt.<span class="fn">colorbar</span>(im, ax=axes[<span class="nm">0</span>], label=<span class="st">'Model Score'</span>)
+axes[<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Continuous Score'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># Binary decision</span>
+cmap2 = <span class="fn">ListedColormap</span>([<span class="st">'#fecaca'</span>, <span class="st">'#bbf7d0'</span>])
+axes[<span class="nm">1</span>].<span class="fn">contourf</span>(xx, yy, Z_class, cmap=cmap2, alpha=<span class="nm">0.8</span>)
+axes[<span class="nm">1</span>].<span class="fn">contour</span>(xx, yy, Z_class, colors=<span class="st">'black'</span>, linewidths=<span class="nm">2</span>)
+axes[<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Binary Decision Boundary'</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Common ML colormaps: viridis, plasma, RdYlGn, Blues, coolwarm"</span>)`,
+              ],
+              output: `Common ML colormaps: viridis, plasma, RdYlGn, Blues, coolwarm`,
+            },
+          ],
+          ml: "Classification decision boundary দেখানো। Prediction probability surface plot। Feature map visualization CNN-এ। Gradient magnitude heatmap।",
+        },
+
+        {
+          num: 10,
+          title: "Box Plot & Violin Plot",
+          subtitle: "Distribution ও outlier visualization",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.boxplot()",
+            "ax.violinplot()",
+            "showfliers=",
+            "patch_artist=",
+            "ax.bxp()",
+            "notch=",
+            "showmeans=",
+          ],
+          what: "Boxplot distribution summary দেখায় — median, quartiles, outliers একসাথে। Violin plot তার সাথে probability density যোগ করে। ML-এ feature distribution compare, outlier detection, cross-validation score distribution দেখাতে ব্যবহার হয়।",
+          examples: [
+            {
+              title: "Example 1 — Cross-Validation Score Distribution",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+<span class="cm"># 5 model CV scores</span>
+models = {
+    <span class="st">'Logistic'</span>: np.random.<span class="fn">normal</span>(<span class="nm">0.78</span>, <span class="nm">0.04</span>, <span class="nm">50</span>),
+    <span class="st">'SVM'</span>:      np.random.<span class="fn">normal</span>(<span class="nm">0.82</span>, <span class="nm">0.03</span>, <span class="nm">50</span>),
+    <span class="st">'RF'</span>:       np.random.<span class="fn">normal</span>(<span class="nm">0.87</span>, <span class="nm">0.025</span>,<span class="nm">50</span>),
+    <span class="st">'XGBoost'</span>:  np.random.<span class="fn">normal</span>(<span class="nm">0.89</span>, <span class="nm">0.02</span>, <span class="nm">50</span>),
+    <span class="st">'NN'</span>:       np.random.<span class="fn">normal</span>(<span class="nm">0.86</span>, <span class="nm">0.05</span>, <span class="nm">50</span>)
+}
+
+fig, (ax1, ax2) = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">6</span>))
+colors = [<span class="st">'#38bdf8'</span>,<span class="st">'#fb923c'</span>,<span class="st">'#34d399'</span>,<span class="st">'#a78bfa'</span>,<span class="st">'#f472b6'</span>]
+
+<span class="cm"># Boxplot</span>
+bp = ax1.<span class="fn">boxplot</span>(<span class="fn">list</span>(models.values()), labels=<span class="fn">list</span>(models.keys()),
+                  patch_artist=<span class="kw">True</span>, notch=<span class="kw">False</span>, showmeans=<span class="kw">True</span>)
+<span class="kw">for</span> patch, color <span class="kw">in</span> <span class="fn">zip</span>(bp[<span class="st">'boxes'</span>], colors):
+    patch.<span class="fn">set_facecolor</span>(color); patch.<span class="fn">set_alpha</span>(<span class="nm">0.7</span>)
+ax1.<span class="fn">set_title</span>(<span class="st">'Model Comparison — Boxplot'</span>, fontweight=<span class="st">'bold'</span>)
+ax1.<span class="fn">set_ylabel</span>(<span class="st">'CV Accuracy'</span>); ax1.<span class="fn">grid</span>(axis=<span class="st">'y'</span>, alpha=<span class="nm">0.3</span>)
+
+<span class="cm"># Violin plot</span>
+vp = ax2.<span class="fn">violinplot</span>(<span class="fn">list</span>(models.values()), showmeans=<span class="kw">True</span>, showmedians=<span class="kw">True</span>)
+<span class="kw">for</span> i, (body, color) <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="fn">zip</span>(vp[<span class="st">'bodies'</span>], colors)):
+    body.<span class="fn">set_facecolor</span>(color); body.<span class="fn">set_alpha</span>(<span class="nm">0.6</span>)
+ax2.<span class="fn">set_xticks</span>(np.<span class="fn">arange</span>(<span class="nm">1</span>,<span class="nm">6</span>)); ax2.<span class="fn">set_xticklabels</span>(<span class="fn">list</span>(models.keys()))
+ax2.<span class="fn">set_title</span>(<span class="st">'Model Comparison — Violin'</span>, fontweight=<span class="st">'bold'</span>)
+ax2.<span class="fn">set_ylabel</span>(<span class="st">'CV Accuracy'</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="kw">for</span> name, scores <span class="kw">in</span> models.items():
+    <span class="fn">print</span>(<span class="st">f"{name:10s}: mean={scores.mean():.3f}, std={scores.std():.3f}"</span>)`,
+              ],
+              output: `Logistic  : mean=0.780, std=0.039
+SVM       : mean=0.820, std=0.031
+RF        : mean=0.870, std=0.024
+XGBoost   : mean=0.890, std=0.020
+NN        : mean=0.860, std=0.049`,
+            },
+          ],
+          ml: "Multiple model-এর CV score distribution compare করা। Feature-wise distribution check করা। Hyperparameter tuning result-এর variance analysis।",
+        },
+
+        {
+          num: 11,
+          title: "Error Bars & Fill Between",
+          subtitle: "Uncertainty ও confidence interval দেখানো",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.errorbar()",
+            "ax.fill_between()",
+            "yerr=",
+            "xerr=",
+            "capsize=",
+            "alpha=",
+            "where=",
+          ],
+          what: "ML model-এর prediction সবসময় uncertainty সহ আসে। fill_between() দিয়ে confidence interval দেখানো, errorbar() দিয়ে standard deviation বা standard error দেখানো যায়। Research paper-এ এটা আবশ্যক।",
+          examples: [
+            {
+              title: "Example 1 — Confidence Interval Training Curve",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">0</span>)
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">51</span>)
+
+<span class="cm"># Simulate 5 runs mean and std</span>
+runs = np.<span class="fn">array</span>([
+    <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>)*<span class="nm">0.03</span>
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">10</span>)
+])
+mean = runs.<span class="fn">mean</span>(axis=<span class="nm">0</span>)
+std  = runs.<span class="fn">std</span>(axis=<span class="nm">0</span>)
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+
+<span class="cm"># Mean line</span>
+ax.<span class="fn">plot</span>(epochs, mean, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'Mean Accuracy'</span>, zorder=<span class="nm">3</span>)
+
+<span class="cm"># ±1 std fill</span>
+ax.<span class="fn">fill_between</span>(epochs, mean-std, mean+std,
+                  alpha=<span class="nm">0.25</span>, color=<span class="st">'#38bdf8'</span>, label=<span class="st">'±1 Std Dev'</span>)
+<span class="cm"># ±2 std fill</span>
+ax.<span class="fn">fill_between</span>(epochs, mean-<span class="nm">2</span>*std, mean+<span class="nm">2</span>*std,
+                  alpha=<span class="nm">0.1</span>, color=<span class="st">'#38bdf8'</span>, label=<span class="st">'±2 Std Dev'</span>)
+
+ax.<span class="fn">set_title</span>(<span class="st">'Training Accuracy with Confidence Interval (10 runs)'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>); ax.<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>)
+ax.<span class="fn">legend</span>(fontsize=<span class="nm">12</span>); ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Final: mean={mean[-1]:.3f} ± {std[-1]:.3f}"</span>)`,
+              ],
+              output: `Final: mean=0.893 ± 0.008`,
+            },
+          ],
+          ml: "Multiple run-এর mean ± std দেখানো। Bayesian model-এর prediction interval। Learning curve uncertainty quantification। Research paper-এর reproducibility proof।",
+        },
+
+        {
+          num: 12,
+          title: "Pie & Donut Chart",
+          subtitle: "Class distribution ও proportion দেখানো",
+          mlBadge: "Sometimes Used",
+          methods: [
+            "ax.pie()",
+            "autopct=",
+            "explode=",
+            "startangle=",
+            "wedgeprops=",
+            "shadow=",
+            "labeldistance=",
+          ],
+          what: "Pie chart দিয়ে proportion দেখা হয়। ML-এ class imbalance visualize করতে, model prediction distribution দেখাতে, dataset split proportion দেখাতে ব্যবহার হয়। Donut chart (hole সহ) আরও clean দেখায়।",
+          examples: [
+            {
+              title: "Example 1 — Class Imbalance ও Dataset Split",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">6</span>))
+
+<span class="cm"># Class imbalance pie</span>
+labels1 = [<span class="st">'Negative (89%)'</span>, <span class="st">'Positive (11%)'</span>]
+sizes1  = [<span class="nm">89</span>, <span class="nm">11</span>]
+explode1= (<span class="nm">0</span>, <span class="nm">0.1</span>)  <span class="cm"># minority class explode</span>
+colors1 = [<span class="st">'#38bdf8'</span>, <span class="st">'#fb923c'</span>]
+
+wedges, texts, autotexts = axes[<span class="nm">0</span>].<span class="fn">pie</span>(
+    sizes1, labels=labels1, autopct=<span class="st">'%1.1f%%'</span>, explode=explode1,
+    colors=colors1, startangle=<span class="nm">90</span>, shadow=<span class="kw">True</span>,
+    wedgeprops={<span class="st">'edgecolor'</span>: <span class="st">'white'</span>, <span class="st">'linewidth'</span>: <span class="nm">2</span>})
+<span class="kw">for</span> t <span class="kw">in</span> autotexts: t.<span class="fn">set_fontsize</span>(<span class="nm">12</span>); t.<span class="fn">set_fontweight</span>(<span class="st">'bold'</span>)
+axes[<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Class Imbalance'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># Donut chart — dataset split</span>
+labels2 = [<span class="st">'Train 70%'</span>, <span class="st">'Validation 15%'</span>, <span class="st">'Test 15%'</span>]
+sizes2  = [<span class="nm">70</span>, <span class="nm">15</span>, <span class="nm">15</span>]
+colors2 = [<span class="st">'#34d399'</span>, <span class="st">'#a78bfa'</span>, <span class="st">'#f472b6'</span>]
+
+axes[<span class="nm">1</span>].<span class="fn">pie</span>(sizes2, labels=labels2, autopct=<span class="st">'%1.0f%%'</span>,
+             colors=colors2, startangle=<span class="nm">90</span>,
+             wedgeprops={<span class="st">'edgecolor'</span>:<span class="st">'white'</span>, <span class="st">'linewidth'</span>:<span class="nm">3</span>, <span class="st">'width'</span>:<span class="nm">0.6</span>})
+axes[<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Dataset Split (Donut)'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Class ratio 89:11 → severe imbalance, need SMOTE or class weights"</span>)`,
+              ],
+              output: `Class ratio 89:11 → severe imbalance, need SMOTE or class weights`,
+            },
+          ],
+          ml: "Class imbalance severity দেখানো। Dataset split proportion confirm করা। Multi-class prediction result proportion দেখানো।",
+        },
+
+        {
+          num: 13,
+          title: "3D Plots",
+          subtitle: "3D surface, scatter ও wireframe",
+          mlBadge: "Sometimes Used",
+          methods: [
+            "from mpl_toolkits.mplot3d import Axes3D",
+            "ax.scatter()",
+            "ax.plot_surface()",
+            "ax.plot_wireframe()",
+            "ax.view_init()",
+            "ax.set_zlabel()",
+          ],
+          what: "3D plot দিয়ে three-dimensional data visualize করা যায়। ML-এ loss landscape visualization, 3D feature space, hyperparameter search surface দেখাতে ব্যবহার হয়। Axes3D দিয়ে 3D axes তৈরি হয়।",
+          examples: [
+            {
+              title: "Example 1 — Loss Landscape 3D Surface",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> mpl_toolkits.mplot3d <span class="kw">import</span> Axes3D
+
+fig = plt.<span class="fn">figure</span>(figsize=(<span class="nm">14</span>, <span class="nm">5</span>))
+
+<span class="cm"># Loss landscape</span>
+ax1 = fig.<span class="fn">add_subplot</span>(<span class="nm">121</span>, projection=<span class="st">'3d'</span>)
+x = np.<span class="fn">linspace</span>(-<span class="nm">3</span>, <span class="nm">3</span>, <span class="nm">60</span>)
+y = np.<span class="fn">linspace</span>(-<span class="nm">3</span>, <span class="nm">3</span>, <span class="nm">60</span>)
+X, Y = np.<span class="fn">meshgrid</span>(x, y)
+Z = X**<span class="nm">2</span> + Y**<span class="nm">2</span> + <span class="nm">0.5</span>*np.<span class="fn">sin</span>(<span class="nm">5</span>*X) * np.<span class="fn">sin</span>(<span class="nm">5</span>*Y)
+
+surf = ax1.<span class="fn">plot_surface</span>(X, Y, Z, cmap=<span class="st">'viridis'</span>, alpha=<span class="nm">0.9</span>)
+ax1.<span class="fn">set_title</span>(<span class="st">'Loss Landscape'</span>, fontweight=<span class="st">'bold'</span>)
+ax1.<span class="fn">set_xlabel</span>(<span class="st">'w1'</span>); ax1.<span class="fn">set_ylabel</span>(<span class="st">'w2'</span>); ax1.<span class="fn">set_zlabel</span>(<span class="st">'Loss'</span>)
+ax1.<span class="fn">view_init</span>(elev=<span class="nm">25</span>, azim=<span class="nm">45</span>)
+
+<span class="cm"># 3D scatter — feature space</span>
+ax2 = fig.<span class="fn">add_subplot</span>(<span class="nm">122</span>, projection=<span class="st">'3d'</span>)
+np.random.<span class="fn">seed</span>(<span class="nm">0</span>)
+<span class="kw">for</span> i, c <span class="kw">in</span> <span class="fn">enumerate</span>([<span class="st">'#38bdf8'</span>,<span class="st">'#fb923c'</span>,<span class="st">'#34d399'</span>]):
+    pts = np.random.<span class="fn">randn</span>(<span class="nm">50</span>, <span class="nm">3</span>) + i*<span class="nm">2</span>
+    ax2.<span class="fn">scatter</span>(*pts.T, c=c, s=<span class="nm">40</span>, alpha=<span class="nm">0.7</span>, label=<span class="st">f'Class {i}'</span>)
+ax2.<span class="fn">set_title</span>(<span class="st">'3D Feature Space'</span>, fontweight=<span class="st">'bold'</span>)
+ax2.<span class="fn">legend</span>()
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"3D plots created: loss surface + feature space"</span>)`,
+              ],
+              output: `3D plots created: loss surface + feature space`,
+            },
+          ],
+          ml: "Neural network loss landscape দেখানো। 3D PCA/t-SNE feature space। Hyperparameter grid search result surface plot।",
+        },
+
+        {
+          num: 14,
+          title: "Saving Figures",
+          subtitle: "High-quality export — PNG, PDF, SVG",
+          mlBadge: "Always Used",
+          methods: [
+            "plt.savefig()",
+            "dpi=",
+            "bbox_inches='tight'",
+            "format='pdf/svg/png'",
+            "transparent=True",
+            "fig.savefig()",
+            "facecolor=",
+          ],
+          what: "ML project-এ plot শুধু screen-এ দেখলে চলে না — report, paper, presentation-এ include করতে হয়। savefig() দিয়ে high resolution PNG, vector PDF বা SVG save করা যায়। dpi=300 প্রিন্টের জন্য standard।",
+          examples: [
+            {
+              title: "Example 1 — Multiple Format-এ Save",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">8</span>, <span class="nm">5</span>))
+ax.<span class="fn">plot</span>(np.<span class="fn">sin</span>(np.<span class="fn">linspace</span>(<span class="nm">0</span>,<span class="nm">10</span>,<span class="nm">100</span>)), lw=<span class="nm">2</span>, color=<span class="st">'steelblue'</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Sample Plot'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># PNG — web/presentation</span>
+plt.<span class="fn">savefig</span>(<span class="st">'plot_web.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)
+
+<span class="cm"># High-res PNG — print quality</span>
+plt.<span class="fn">savefig</span>(<span class="st">'plot_print.png'</span>, dpi=<span class="nm">300</span>, bbox_inches=<span class="st">'tight'</span>)
+
+<span class="cm"># PDF — vector, perfect for LaTeX/papers</span>
+plt.<span class="fn">savefig</span>(<span class="st">'plot.pdf'</span>, format=<span class="st">'pdf'</span>, bbox_inches=<span class="st">'tight'</span>)
+
+<span class="cm"># SVG — web vector</span>
+plt.<span class="fn">savefig</span>(<span class="st">'plot.svg'</span>, format=<span class="st">'svg'</span>, bbox_inches=<span class="st">'tight'</span>)
+
+<span class="cm"># Transparent background</span>
+plt.<span class="fn">savefig</span>(<span class="st">'plot_transparent.png'</span>, dpi=<span class="nm">150</span>,
+            bbox_inches=<span class="st">'tight'</span>, transparent=<span class="kw">True</span>)
+
+plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Saved formats: PNG (150dpi), PNG (300dpi), PDF, SVG, PNG (transparent)"</span>)
+<span class="fn">print</span>(<span class="st">"Tip: Use PDF for papers, PNG 300dpi for reports, SVG for web"</span>)`,
+              ],
+              output: `Saved formats: PNG (150dpi), PNG (300dpi), PDF, SVG, PNG (transparent)
+Tip: Use PDF for papers, PNG 300dpi for reports, SVG for web`,
+            },
+          ],
+          ml: "ML paper-এ PDF/SVG দিয়ে vector graphics। Jupyter notebook-এর plot high-res PNG-তে save করা। Dashboard screenshot-এ transparent PNG।",
+        },
+
+        {
+          num: 15,
+          title: "Styles & Themes",
+          subtitle: "plt.style — professional থেকে publication-ready",
+          mlBadge: "Often Used",
+          methods: [
+            "plt.style.use()",
+            "plt.rcParams[]",
+            "mpl.rc()",
+            "with plt.style.context():",
+            "plt.style.available",
+            "matplotlib.rcdefaults()",
+          ],
+          what: "Default Matplotlib style অনেকের কাছে পুরনো দেখায়। plt.style.use() দিয়ে global style change করা যায়। 'seaborn', 'ggplot', 'fivethirtyeight' popular choices। rcParams দিয়ে fine-grained control পাওয়া যায়।",
+          examples: [
+            {
+              title: "Example 1 — Style Comparison",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+styles = [<span class="st">'default'</span>, <span class="st">'seaborn-v0_8'</span>, <span class="st">'ggplot'</span>, <span class="st">'fivethirtyeight'</span>]
+x = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">50</span>)
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">2</span>, <span class="nm">2</span>, figsize=(<span class="nm">12</span>, <span class="nm">8</span>))
+
+<span class="kw">for</span> ax, style <span class="kw">in</span> <span class="fn">zip</span>(axes.<span class="fn">flat</span>, styles):
+    <span class="kw">with</span> plt.style.<span class="fn">context</span>(style):
+        ax.<span class="fn">plot</span>(x, np.<span class="fn">sin</span>(x), lw=<span class="nm">2</span>)
+        ax.<span class="fn">plot</span>(x, np.<span class="fn">cos</span>(x), lw=<span class="nm">2</span>)
+        ax.<span class="fn">set_title</span>(<span class="st">f'Style: {style}'</span>, fontweight=<span class="st">'bold'</span>)
+
+fig.<span class="fn">suptitle</span>(<span class="st">'Matplotlib Style Comparison'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+
+<span class="cm"># Custom rcParams</span>
+plt.rcParams.<span class="fn">update</span>({
+    <span class="st">'font.size'</span>: <span class="nm">13</span>,
+    <span class="st">'font.family'</span>: <span class="st">'DejaVu Sans'</span>,
+    <span class="st">'axes.titlesize'</span>: <span class="nm">15</span>,
+    <span class="st">'axes.labelsize'</span>: <span class="nm">13</span>,
+    <span class="st">'lines.linewidth'</span>: <span class="nm">2</span>,
+    <span class="st">'figure.dpi'</span>: <span class="nm">100</span>,
+})
+<span class="fn">print</span>(<span class="st">"Total available styles:"</span>, <span class="fn">len</span>(plt.style.available))`,
+              ],
+              output: `Total available styles: 35`,
+            },
+          ],
+          ml: "Research paper-এ consistent style maintain করা। Seaborn style সবচেয়ে popular for ML visualization। rcParams দিয়ে company/lab brand color apply করা।",
+        },
+
+        {
+          num: 16,
+          title: "Twinx / Shared Axes",
+          subtitle: "একই plot-এ different scale-এর দুটি y-axis",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.twinx()",
+            "ax.twiny()",
+            "ax2.set_ylabel()",
+            "ax.tick_params(colors=)",
+            "secondary_yaxis",
+            "sharex=",
+            "sharey=",
+          ],
+          what: "Loss ও accuracy-এর scale আলাদা — loss হয়তো 0-3, accuracy 0-1। একই plot-এ দেখাতে twinx() দিয়ে second y-axis তৈরি করা হয়। ML training monitoring dashboard-এ এটা standard।",
+          examples: [
+            {
+              title: "Example 1 — Loss + Accuracy Dual Axis Dashboard",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">61</span>)
+loss  = <span class="nm">3.0</span> * np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*epochs) + <span class="nm">0.1</span> + np.random.<span class="fn">randn</span>(<span class="nm">60</span>)*<span class="nm">0.03</span>
+acc   = <span class="nm">1</span>   - np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*epochs) * <span class="nm">0.95</span>+ np.random.<span class="fn">randn</span>(<span class="nm">60</span>)*<span class="nm">0.01</span>
+
+fig, ax1 = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">11</span>, <span class="nm">6</span>))
+ax2 = ax1.<span class="fn">twinx</span>()
+
+<span class="cm"># Plot on each axis</span>
+l1 = ax1.<span class="fn">plot</span>(epochs, loss, color=<span class="st">'#f87171'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'Loss'</span>, ls=<span class="st">'-'</span>)
+l2 = ax2.<span class="fn">plot</span>(epochs, acc,  color=<span class="st">'#34d399'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'Accuracy'</span>, ls=<span class="st">'--'</span>)
+
+<span class="cm"># Color code the axes</span>
+ax1.<span class="fn">set_ylabel</span>(<span class="st">'Loss'</span>, color=<span class="st">'#f87171'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+ax2.<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>, color=<span class="st">'#34d399'</span>, fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+ax1.<span class="fn">tick_params</span>(axis=<span class="st">'y'</span>, labelcolor=<span class="st">'#f87171'</span>)
+ax2.<span class="fn">tick_params</span>(axis=<span class="st">'y'</span>, labelcolor=<span class="st">'#34d399'</span>)
+ax1.<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>, fontsize=<span class="nm">13</span>)
+
+<span class="cm"># Combined legend</span>
+lines = l1 + l2
+labels = [l.<span class="fn">get_label</span>() <span class="kw">for</span> l <span class="kw">in</span> lines]
+ax1.<span class="fn">legend</span>(lines, labels, fontsize=<span class="nm">12</span>, loc=<span class="st">'center right'</span>)
+
+ax1.<span class="fn">set_title</span>(<span class="st">'Training: Loss & Accuracy (Dual Axis)'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+ax1.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.15</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Epoch 60 → Loss: {loss[-1]:.3f} | Acc: {acc[-1]:.3f}"</span>)`,
+              ],
+              output: `Epoch 60 → Loss: 0.117 | Acc: 0.952`,
+            },
+          ],
+          ml: "Training monitoring-এ loss ও accuracy একসাথে দেখানো standard। Learning rate schedule vs loss curve একসাথে। Precision ও recall trade-off visualize করা।",
+        },
+
+        {
+          num: 17,
+          title: "Interactive Plot (mplcursors)",
+          subtitle: "Hover করলে data দেখা যায়",
+          mlBadge: "Sometimes Used",
+          methods: [
+            "plt.ginput()",
+            "fig.canvas.mpl_connect()",
+            "mplcursors.cursor()",
+            "mpld3",
+            "plotly (alternative)",
+            "button_press_event",
+            "motion_notify_event",
+          ],
+          what: "Static plot-এ specific point-এর value বোঝা কঠিন। Interactive hover করলে tooltip দিয়ে data দেখা অনেক সুবিধাজনক। mplcursors library দিয়ে এটা সহজে করা যায়। Jupyter notebook-এ %matplotlib widget backend ব্যবহার করতে হয়।",
+          examples: [
+            {
+              title: "Example 1 — Interactive Tooltip",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># mplcursors না থাকলে: pip install mplcursors</span>
+<span class="kw">try</span>:
+    <span class="kw">import</span> mplcursors
+    HAS_CURSOR = <span class="kw">True</span>
+<span class="kw">except</span>:
+    HAS_CURSOR = <span class="kw">False</span>
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+models = [<span class="st">'LR'</span>, <span class="st">'SVM'</span>, <span class="st">'RF'</span>, <span class="st">'XGB'</span>, <span class="st">'NN'</span>]
+acc    = [<span class="nm">0.78</span>, <span class="nm">0.82</span>, <span class="nm">0.87</span>, <span class="nm">0.91</span>, <span class="nm">0.89</span>]
+time   = [<span class="nm">0.5</span>,  <span class="nm">2.1</span>,  <span class="nm">3.4</span>,  <span class="nm">5.2</span>,  <span class="nm">8.7</span>]
+
+fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="nm">9</span>, <span class="nm">6</span>))
+scatter = ax.<span class="fn">scatter</span>(time, acc, s=<span class="nm">200</span>, c=[<span class="nm">0.78</span>,<span class="nm">0.82</span>,<span class="nm">0.87</span>,<span class="nm">0.91</span>,<span class="nm">0.89</span>],
+                        cmap=<span class="st">'RdYlGn'</span>, vmin=<span class="nm">0.7</span>, vmax=<span class="nm">1.0</span>, zorder=<span class="nm">5</span>)
+
+<span class="kw">for</span> m, x, y <span class="kw">in</span> <span class="fn">zip</span>(models, time, acc):
+    ax.<span class="fn">annotate</span>(m, (x, y), textcoords=<span class="st">"offset points"</span>,
+                xytext=(<span class="nm">8</span>,<span class="nm">5</span>), fontsize=<span class="nm">12</span>, fontweight=<span class="st">'bold'</span>)
+
+plt.<span class="fn">colorbar</span>(scatter, label=<span class="st">'Accuracy'</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="st">'Training Time (seconds)'</span>, fontsize=<span class="nm">13</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>, fontsize=<span class="nm">13</span>)
+ax.<span class="fn">set_title</span>(<span class="st">'Accuracy vs Training Time'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="kw">if</span> HAS_CURSOR:
+    cursor = mplcursors.<span class="fn">cursor</span>(scatter, hover=<span class="kw">True</span>)
+    <span class="kw">@cursor.connect</span>(<span class="st">"add"</span>)
+    <span class="kw">def</span> <span class="fn">on_add</span>(sel):
+        i = sel.index
+        sel.annotation.<span class="fn">set_text</span>(<span class="st">f'{models[i]}\nAcc={acc[i]:.2f}\nTime={time[i]:.1f}s'</span>)
+
+ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Best model: {models[acc.index(max(acc))]} (acc={max(acc):.2f})"</span>)`,
+              ],
+              output: `Best model: XGB (acc=0.91)`,
+            },
+          ],
+          ml: "Model selection scatter plot-এ hover করে detail দেখা। Large dataset-এ specific point identify করা। Hyperparameter sensitivity interactive exploration।",
+        },
+
+        {
+          num: 18,
+          title: "Image Display (imshow)",
+          subtitle: "Image data ও feature map দেখানো",
+          mlBadge: "Often Used",
+          methods: [
+            "ax.imshow()",
+            "plt.imread()",
+            "cmap='gray'",
+            "interpolation=",
+            "vmin/vmax=",
+            "ax.axis('off')",
+            "np.clip()",
+          ],
+          what: "Computer Vision ML-এ image data, feature map, weight visualization — সব কিছুতে imshow() ব্যবহার হয়। CNN-এর intermediate layer output, adversarial example visualization, data augmentation result দেখাতে এটা অপরিহার্য।",
+          examples: [
+            {
+              title: "Example 1 — CNN Feature Map Visualization",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+
+<span class="cm"># Simulate: original image + 8 feature maps</span>
+original = np.random.<span class="fn">rand</span>(<span class="nm">28</span>, <span class="nm">28</span>)
+feature_maps = [np.random.<span class="fn">rand</span>(<span class="nm">14</span>, <span class="nm">14</span>) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">8</span>)]
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">2</span>, <span class="nm">5</span>, figsize=(<span class="nm">15</span>, <span class="nm">6</span>))
+
+<span class="cm"># Original image</span>
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">imshow</span>(original, cmap=<span class="st">'gray'</span>)
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'Input Image'</span>, fontweight=<span class="st">'bold'</span>)
+axes[<span class="nm">0</span>,<span class="nm">0</span>].<span class="fn">axis</span>(<span class="st">'off'</span>)
+
+<span class="cm"># Feature maps with different colormaps</span>
+cmaps = [<span class="st">'viridis'</span>,<span class="st">'plasma'</span>,<span class="st">'hot'</span>,<span class="st">'cool'</span>,<span class="st">'RdBu'</span>,<span class="st">'YlOrRd'</span>,<span class="st">'Blues'</span>,<span class="st">'Greens'</span>]
+all_axes = <span class="fn">list</span>(axes.<span class="fn">flat</span>)[<span class="nm">1</span>:]
+
+<span class="kw">for</span> i, (ax, fmap, cmap) <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="fn">zip</span>(all_axes, feature_maps, cmaps)):
+    im = ax.<span class="fn">imshow</span>(fmap, cmap=cmap)
+    ax.<span class="fn">set_title</span>(<span class="st">f'Filter {i+1}'</span>, fontsize=<span class="nm">10</span>)
+    ax.<span class="fn">axis</span>(<span class="st">'off'</span>)
+    plt.<span class="fn">colorbar</span>(im, ax=ax, shrink=<span class="nm">0.8</span>)
+
+fig.<span class="fn">suptitle</span>(<span class="st">'CNN Feature Maps (Conv Layer 1)'</span>, fontsize=<span class="nm">15</span>, fontweight=<span class="st">'bold'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f"Feature map shape: {feature_maps[0].shape}"</span>)`,
+              ],
+              output: `Feature map shape: (14, 14)`,
+            },
+          ],
+          ml: "CNN filter/feature map visualization। GradCAM attention heatmap। Data augmentation result দেখানো। MNIST/CIFAR sample images visualize করা।",
+        },
+
+        {
+          num: 19,
+          title: "Matplotlib with Pandas",
+          subtitle: "DataFrame থেকে সরাসরি plot",
+          mlBadge: "★ Most Used",
+          methods: [
+            "df.plot()",
+            "df.plot.bar()",
+            "df.plot.hist()",
+            "df.plot.scatter()",
+            "df.plot.box()",
+            "kind=",
+            "ax=",
+            "figsize=",
+          ],
+          what: "Pandas DataFrame-এ built-in plot() method থাকে যেটা internally Matplotlib ব্যবহার করে। df.plot() দিয়ে দ্রুত exploratory visualization করা যায়। তারপর Matplotlib দিয়ে further customize করা যায়।",
+          examples: [
+            {
+              title: "Example 1 — DataFrame-এর Direct Plot",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'epoch'</span>: <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">51</span>),
+    <span class="st">'train_loss'</span>: <span class="nm">2.5</span>*np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*np.<span class="fn">arange</span>(<span class="nm">50</span>)) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>)*<span class="nm">0.05</span>,
+    <span class="st">'val_loss'</span>  : <span class="nm">2.8</span>*np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*np.<span class="fn">arange</span>(<span class="nm">50</span>)) + np.random.<span class="fn">randn</span>(<span class="nm">50</span>)*<span class="nm">0.08</span>,
+    <span class="st">'train_acc'</span> : <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*np.<span class="fn">arange</span>(<span class="nm">50</span>)),
+    <span class="st">'val_acc'</span>   : <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*np.<span class="fn">arange</span>(<span class="nm">50</span>))
+})
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">5</span>))
+
+<span class="cm"># Pandas plot — loss curves</span>
+df.<span class="fn">plot</span>(x=<span class="st">'epoch'</span>, y=[<span class="st">'train_loss'</span>, <span class="st">'val_loss'</span>],
+       ax=axes[<span class="nm">0</span>], lw=<span class="nm">2.5</span>, title=<span class="st">'Loss Curves'</span>,
+       color=[<span class="st">'#38bdf8'</span>, <span class="st">'#fb923c'</span>])
+axes[<span class="nm">0</span>].<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>); axes[<span class="nm">0</span>].<span class="fn">set_ylabel</span>(<span class="st">'Loss'</span>)
+axes[<span class="nm">0</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+
+<span class="cm"># Pandas plot — accuracy</span>
+df.<span class="fn">plot</span>(x=<span class="st">'epoch'</span>, y=[<span class="st">'train_acc'</span>, <span class="st">'val_acc'</span>],
+       ax=axes[<span class="nm">1</span>], lw=<span class="nm">2.5</span>, title=<span class="st">'Accuracy Curves'</span>,
+       color=[<span class="st">'#34d399'</span>, <span class="st">'#a78bfa'</span>])
+axes[<span class="nm">1</span>].<span class="fn">set_xlabel</span>(<span class="st">'Epoch'</span>); axes[<span class="nm">1</span>].<span class="fn">set_ylabel</span>(<span class="st">'Accuracy'</span>)
+axes[<span class="nm">1</span>].<span class="fn">set_ylim</span>(<span class="nm">0</span>, <span class="nm">1.05</span>); axes[<span class="nm">1</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(df.<span class="fn">tail</span>(<span class="nm">3</span>)[[<span class="st">'train_loss'</span>,<span class="st">'val_loss'</span>,<span class="st">'train_acc'</span>,<span class="st">'val_acc'</span>]].<span class="fn">round</span>(<span class="nm">3</span>))`,
+              ],
+              output: `    train_loss  val_loss  train_acc  val_acc
+47       0.102     0.214      0.992    0.978
+48       0.094     0.237      0.993    0.979
+49       0.057     0.209      0.993    0.981`,
+            },
+          ],
+          ml: "EDA-তে df.plot() দিয়ে quick visualization। Training history DataFrame থেকে সরাসরি plot। Feature statistics DataFrame-এর bar/box plot।",
+        },
+
+        {
+          num: 20,
+          title: "Complete ML Visualization Pipeline",
+          subtitle: "Full project-এ সব plot একসাথে — end-to-end",
+          mlBadge: "★ Most Used",
+          methods: [
+            "All previous methods combined",
+            "fig.suptitle()",
+            "plt.tight_layout()",
+            "plt.savefig()",
+            "GridSpec",
+            "annotation",
+            "colorbar",
+          ],
+          what: "Real ML project-এ শুধু একটা plot যথেষ্ট না। Model evaluation-এ confusion matrix, ROC curve, precision-recall curve, feature importance, training history — সব একসাথে একটা comprehensive figure-এ দেখানো professional standard।",
+          examples: [
+            {
+              title: "Example 1 — Complete ML Report Dashboard",
+              code: [
+                `<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> matplotlib.gridspec <span class="kw">import</span> GridSpec
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+fig = plt.<span class="fn">figure</span>(figsize=(<span class="nm">16</span>, <span class="nm">12</span>))
+gs  = <span class="fn">GridSpec</span>(<span class="nm">3</span>, <span class="nm">3</span>, figure=fig, hspace=<span class="nm">0.45</span>, wspace=<span class="nm">0.35</span>)
+
+epochs = np.<span class="fn">arange</span>(<span class="nm">1</span>, <span class="nm">51</span>)
+
+<span class="cm"># [0,0:2] Training Curves (wide)</span>
+ax1 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">0</span>, :<span class="nm">2</span>])
+ax1.<span class="fn">plot</span>(epochs, np.<span class="fn">exp</span>(-<span class="nm">0.1</span>*epochs)+<span class="nm">0.1</span>, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2</span>, label=<span class="st">'Train'</span>)
+ax1.<span class="fn">plot</span>(epochs, np.<span class="fn">exp</span>(-<span class="nm">0.08</span>*epochs)+<span class="nm">0.18</span>, color=<span class="st">'#fb923c'</span>, lw=<span class="nm">2</span>, ls=<span class="st">'--'</span>, label=<span class="st">'Val'</span>)
+ax1.<span class="fn">set_title</span>(<span class="st">'Training Loss'</span>, fontweight=<span class="st">'bold'</span>); ax1.<span class="fn">legend</span>()
+
+<span class="cm"># [0,2] Accuracy pie</span>
+ax2 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">0</span>, <span class="nm">2</span>])
+ax2.<span class="fn">pie</span>([<span class="nm">88</span>,<span class="nm">12</span>], labels=[<span class="st">'Correct'</span>,<span class="st">'Wrong'</span>], colors=[<span class="st">'#34d399'</span>,<span class="st">'#f87171'</span>],
+        autopct=<span class="st">'%1.0f%%'</span>, startangle=<span class="nm">90</span>,
+        wedgeprops={<span class="st">'edgecolor'</span>:<span class="st">'white'</span>,<span class="st">'linewidth'</span>:<span class="nm">2</span>})
+ax2.<span class="fn">set_title</span>(<span class="st">'Prediction Accuracy'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># [1,0:2] Confusion Matrix</span>
+ax3 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">1</span>, :<span class="nm">2</span>])
+cm = np.<span class="fn">array</span>([[<span class="nm">85</span>,<span class="nm">5</span>,<span class="nm">10</span>],[<span class="nm">8</span>,<span class="nm">88</span>,<span class="nm">4</span>],[<span class="nm">6</span>,<span class="nm">3</span>,<span class="nm">91</span>]])
+im = ax3.<span class="fn">imshow</span>(cm, cmap=<span class="st">'Blues'</span>)
+plt.<span class="fn">colorbar</span>(im, ax=ax3)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">3</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">3</span>):
+        ax3.<span class="fn">text</span>(j,i,cm[i,j],ha=<span class="st">'center'</span>,va=<span class="st">'center'</span>,fontsize=<span class="nm">14</span>,fontweight=<span class="st">'bold'</span>,
+                color=<span class="st">'white'</span> <span class="kw">if</span> cm[i,j]><span class="nm">50</span> <span class="kw">else</span> <span class="st">'black'</span>)
+ax3.<span class="fn">set_title</span>(<span class="st">'Confusion Matrix'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># [1,2] Feature importance</span>
+ax4 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">1</span>, <span class="nm">2</span>])
+feats=[<span class="st">'F1'</span>,<span class="st">'F2'</span>,<span class="st">'F3'</span>,<span class="st">'F4'</span>]; imp=[<span class="nm">0.35</span>,<span class="nm">0.25</span>,<span class="nm">0.22</span>,<span class="nm">0.18</span>]
+ax4.<span class="fn">barh</span>(feats, imp, color=[<span class="st">'#38bdf8'</span>,<span class="st">'#fb923c'</span>,<span class="st">'#34d399'</span>,<span class="st">'#a78bfa'</span>])
+ax4.<span class="fn">set_title</span>(<span class="st">'Feature Importance'</span>, fontweight=<span class="st">'bold'</span>)
+
+<span class="cm"># [2, :] ROC curve</span>
+ax5 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">2</span>, :<span class="nm">2</span>])
+fpr = np.<span class="fn">linspace</span>(<span class="nm">0</span>,<span class="nm">1</span>,<span class="nm">100</span>)
+tpr = <span class="nm">1</span> - np.<span class="fn">exp</span>(-<span class="nm">5</span>*fpr)
+ax5.<span class="fn">plot</span>(fpr, tpr, color=<span class="st">'#38bdf8'</span>, lw=<span class="nm">2.5</span>, label=<span class="st">'ROC (AUC=0.94)'</span>)
+ax5.<span class="fn">plot</span>([<span class="nm">0</span>,<span class="nm">1</span>],[<span class="nm">0</span>,<span class="nm">1</span>],<span class="st">'--'</span>, color=<span class="st">'gray'</span>, lw=<span class="nm">1.5</span>, label=<span class="st">'Random'</span>)
+ax5.<span class="fn">fill_between</span>(fpr, tpr, alpha=<span class="nm">0.1</span>, color=<span class="st">'#38bdf8'</span>)
+ax5.<span class="fn">set_xlabel</span>(<span class="st">'False Positive Rate'</span>); ax5.<span class="fn">set_ylabel</span>(<span class="st">'True Positive Rate'</span>)
+ax5.<span class="fn">set_title</span>(<span class="st">'ROC Curve'</span>, fontweight=<span class="st">'bold'</span>); ax5.<span class="fn">legend</span>()
+
+<span class="cm"># [2,2] Score distribution</span>
+ax6 = fig.<span class="fn">add_subplot</span>(gs[<span class="nm">2</span>, <span class="nm">2</span>])
+ax6.<span class="fn">hist</span>(np.random.<span class="fn">beta</span>(<span class="nm">8</span>,<span class="nm">2</span>,<span class="nm">500</span>), bins=<span class="nm">25</span>, color=<span class="st">'#a78bfa'</span>, alpha=<span class="nm">0.8</span>)
+ax6.<span class="fn">set_title</span>(<span class="st">'Pred Score Dist'</span>, fontweight=<span class="st">'bold'</span>)
+
+fig.<span class="fn">suptitle</span>(<span class="st">'🤖 ML Model Evaluation Dashboard'</span>, fontsize=<span class="nm">20</span>, fontweight=<span class="st">'bold'</span>, y=<span class="nm">1.01</span>)
+plt.<span class="fn">savefig</span>(<span class="st">'ml_dashboard.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)
+plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"Dashboard saved as ml_dashboard.png"</span>)`,
+              ],
+              output: `Dashboard saved as ml_dashboard.png`,
+            },
+            {
+              title: "Example 2 — ROC + Precision-Recall Curves",
+              code: [
+                `np.random.<span class="fn">seed</span>(<span class="nm">42</span>)
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">14</span>, <span class="nm">6</span>))
+
+models_roc = {
+    <span class="st">'Logistic (AUC=0.79)'</span>: (<span class="nm">1.0</span>,  <span class="st">'#38bdf8'</span>),
+    <span class="st">'SVM (AUC=0.84)'</span>:      (<span class="nm">2.5</span>,  <span class="st">'#fb923c'</span>),
+    <span class="st">'XGBoost (AUC=0.94)'</span>: (<span class="nm">6.0</span>,  <span class="st">'#34d399'</span>),
+    <span class="st">'NN (AUC=0.92)'</span>:       (<span class="nm">5.0</span>,  <span class="st">'#a78bfa'</span>),
+}
+
+fpr = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">100</span>)
+<span class="kw">for</span> label, (k, color) <span class="kw">in</span> models_roc.items():
+    tpr = <span class="nm">1</span> - np.<span class="fn">exp</span>(-k*fpr)
+    axes[<span class="nm">0</span>].<span class="fn">plot</span>(fpr, tpr, lw=<span class="nm">2.5</span>, color=color, label=label)
+
+axes[<span class="nm">0</span>].<span class="fn">plot</span>([<span class="nm">0</span>,<span class="nm">1</span>],[<span class="nm">0</span>,<span class="nm">1</span>],'--', color=<span class="st">'gray'</span>)
+axes[<span class="nm">0</span>].<span class="fn">fill_between</span>(fpr, [<span class="nm">0</span>]*<span class="nm">100</span>, fpr, alpha=<span class="nm">0.05</span>, color=<span class="st">'gray'</span>)
+axes[<span class="nm">0</span>].<span class="fn">set_xlabel</span>(<span class="st">'FPR'</span>); axes[<span class="nm">0</span>].<span class="fn">set_ylabel</span>(<span class="st">'TPR'</span>)
+axes[<span class="nm">0</span>].<span class="fn">set_title</span>(<span class="st">'ROC Curves — Multi-model'</span>, fontweight=<span class="st">'bold'</span>, fontsize=<span class="nm">14</span>)
+axes[<span class="nm">0</span>].<span class="fn">legend</span>(fontsize=<span class="nm">11</span>); axes[<span class="nm">0</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+
+<span class="cm"># Precision-Recall</span>
+recall = np.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">100</span>)
+<span class="kw">for</span> label, (k, color) <span class="kw">in</span> models_roc.items():
+    precision = <span class="nm">1</span> / (<span class="nm">1</span> + np.<span class="fn">exp</span>(k*(recall-<span class="nm">0.7</span>)))
+    axes[<span class="nm">1</span>].<span class="fn">plot</span>(recall, precision, lw=<span class="nm">2.5</span>, color=color, label=label.<span class="fn">split</span>(<span class="st">'AUC='</span>)[<span class="nm">0</span>].<span class="fn">strip</span>())
+
+axes[<span class="nm">1</span>].<span class="fn">set_xlabel</span>(<span class="st">'Recall'</span>); axes[<span class="nm">1</span>].<span class="fn">set_ylabel</span>(<span class="st">'Precision'</span>)
+axes[<span class="nm">1</span>].<span class="fn">set_title</span>(<span class="st">'Precision-Recall Curves'</span>, fontweight=<span class="st">'bold'</span>, fontsize=<span class="nm">14</span>)
+axes[<span class="nm">1</span>].<span class="fn">legend</span>(fontsize=<span class="nm">11</span>); axes[<span class="nm">1</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="nm">0.2</span>)
+
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">"ROC + Precision-Recall curves for 4 models"</span>)`,
+              ],
+              output: `ROC + Precision-Recall curves for 4 models`,
+            },
+          ],
+          ml: "End-to-end ML project-এ সম্পূর্ণ evaluation dashboard। Paper submission-এর জন্য comprehensive figure। Client presentation-এ model performance একনজরে দেখানো।",
+        },
+      ];
+
+      // ── BUILD NAV ──
+      const navEl = document.getElementById("navList");
+      TOPICS.forEach((t, i) => {
+        const d = document.createElement("div");
+        d.className = "nav-item" + (i === 0 ? " active" : "");
+        d.id = `nav-${t.num}`;
+        d.innerHTML = `<span class="nav-num">${String(t.num).padStart(2, "0")}</span>${t.title}`;
+        d.onclick = () =>
+          document
+            .getElementById(`t-${t.num}`)
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        navEl.appendChild(d);
+      });
+
+      // ── BUILD TOPICS ──
+      const container = document.getElementById("topicsContainer");
+      TOPICS.forEach((t) => {
+        const card = document.createElement("div");
+        card.className = "topic-card";
+        card.id = `t-${t.num}`;
+        let examplesHtml = "";
+        t.examples.forEach((ex) => {
+          examplesHtml += `
+      <div class="example-block">
+        <div class="example-title">${ex.title}</div>
+        <div class="code-wrap">
+          <div class="code-top">
+            <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+            <span class="code-lang">python</span>
+          </div>
+          <pre>${ex.code[0]}</pre>
+        </div>
+        <div class="out-wrap">
+          <div class="out-label">▶ OUTPUT</div>
+          <pre>${ex.output}</pre>
+        </div>
+      </div>`;
+        });
+
+        card.innerHTML = `
+    <div class="topic-header">
+      <div class="topic-badge">${String(t.num).padStart(2, "0")}</div>
+      <div class="topic-title"><h2>${t.title}</h2><div class="topic-subtitle">${t.subtitle}</div></div>
+      <div class="ml-badge">${t.mlBadge}</div>
+    </div>
+    <div class="topic-body">
+      <div class="sec-label">What Is It</div>
+      <div class="what-is">${t.what}</div>
+      <div class="sec-label">Key Methods</div>
+      <div class="methods-wrap">${t.methods.map((m) => `<span class="mtag">${m}</span>`).join("")}</div>
+      <div class="sec-label">Examples & Output</div>
+      ${examplesHtml}
+      <div class="ml-use-box">
+        <span class="ml-icon">🤖</span>
+        <div class="ml-content"><strong>ML Application</strong><p>${t.ml}</p></div>
+      </div>
+    </div>`;
+        container.appendChild(card);
+      });
+
+      // ── SUMMARY TABLE ──
+      const sumBody = document.getElementById("sumBody");
+      TOPICS.forEach((t, i) => {
+        const tr = document.createElement("tr");
+        tr.style.background =
+          i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.015)";
+        tr.innerHTML = `
+    <td>${t.num}</td>
+    <td>${t.title}</td>
+    <td>${t.methods.slice(0, 2).join(", ")}</td>
+    <td>${t.ml.substring(0, 110)}${t.ml.length > 110 ? "..." : ""}</td>`;
+        sumBody.appendChild(tr);
+      });
+
+      // ── SCROLL PROGRESS + NAV ACTIVE ──
+      window.addEventListener(
+        "scroll",
+        () => {
+          const p =
+            (window.scrollY /
+              (document.body.scrollHeight - window.innerHeight)) *
+            100;
+          document.getElementById("pFill").style.width = p + "%";
+          TOPICS.forEach((t) => {
+            const el = document.getElementById(`t-${t.num}`);
+            if (el) {
+              const r = el.getBoundingClientRect();
+              if (r.top <= 150 && r.bottom > 150) {
+                document
+                  .querySelectorAll(".nav-item")
+                  .forEach((n) => n.classList.remove("active"));
+                const nav = document.getElementById(`nav-${t.num}`);
+                if (nav) {
+                  nav.classList.add("active");
+                  nav.scrollIntoView({ block: "nearest" });
+                }
+              }
+            }
+          });
+        },
+        { passive: true },
+      );
+
+      // ── LOAD DOCX ──
+      function loadDocx() {
+        return new Promise((res, rej) => {
+          if (window.docx) {
+            res(window.docx);
+            return;
+          }
+          const s = document.createElement("script");
+          s.src = "https://unpkg.com/docx@8.5.0/build/index.umd.js";
+          s.onload = () => res(window.docx);
+          s.onerror = () => rej(new Error("Failed to load docx"));
+          document.head.appendChild(s);
+        });
+      }
+
+      // ── SAVE AS DOCX ──
+      async function saveAsDocx() {
+        const btn = document.querySelector(".btn-save");
+        btn.textContent = "⏳ Loading...";
+        btn.disabled = true;
+        try {
+          await loadDocx();
+          btn.textContent = "⏳ Building...";
+          const {
+            Document,
+            Packer,
+            Paragraph,
+            TextRun,
+            Table,
+            TableRow,
+            TableCell,
+            HeadingLevel,
+            AlignmentType,
+            BorderStyle,
+            WidthType,
+            ShadingType,
+            LevelFormat,
+          } = docx;
+
+          const BLUE = "1565C0",
+            DARK = "050D1F",
+            TEAL = "0E7490",
+            GREEN = "065F46";
+          const bdr = { style: BorderStyle.SINGLE, size: 1, color: "BBF7D0" };
+          const bord = { top: bdr, bottom: bdr, left: bdr, right: bdr };
+          const nob = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+          const noBord = { top: nob, bottom: nob, left: nob, right: nob };
+
+          const sp = (s = 80) =>
+            new Paragraph({
+              spacing: { before: 0, after: s },
+              children: [new TextRun("")],
+            });
+
+          const children = [];
+
+          // Title
+          children.push(
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              shading: { fill: DARK, type: ShadingType.CLEAR },
+              spacing: { before: 0, after: 0 },
+              children: [
+                new TextRun({
+                  text: "📊 Matplotlib Notes for Machine Learning",
+                  font: "Arial",
+                  size: 40,
+                  bold: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              shading: { fill: TEAL, type: ShadingType.CLEAR },
+              spacing: { before: 0, after: 240 },
+              children: [
+                new TextRun({
+                  text: "Top 20 Topics — Full Examples with Output",
+                  font: "Arial",
+                  size: 22,
+                  italic: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            sp(160),
+          );
+
+          for (const t of TOPICS) {
+            // Topic header
+            children.push(
+              new Paragraph({
+                shading: { fill: DARK, type: ShadingType.CLEAR },
+                spacing: { before: 280, after: 0 },
+                children: [
+                  new TextRun({
+                    text: `  ${String(t.num).padStart(2, "0")}. ${t.title}`,
+                    font: "Arial",
+                    size: 30,
+                    bold: true,
+                    color: "FFFFFF",
+                  }),
+                ],
+              }),
+              new Paragraph({
+                shading: { fill: "0E4D64", type: ShadingType.CLEAR },
+                spacing: { before: 0, after: 80 },
+                children: [
+                  new TextRun({
+                    text: `  ${t.subtitle}  |  ${t.mlBadge}`,
+                    font: "Arial",
+                    size: 18,
+                    italic: true,
+                    color: "BAE6FD",
+                  }),
+                ],
+              }),
+              sp(60),
+            );
+
+            // What is
+            children.push(
+              new Paragraph({
+                spacing: { before: 60, after: 30 },
+                children: [
+                  new TextRun({
+                    text: "📌 What Is It",
+                    font: "Arial",
+                    size: 21,
+                    bold: true,
+                    color: TEAL,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                spacing: { before: 0, after: 80 },
+                border: {
+                  left: {
+                    style: BorderStyle.SINGLE,
+                    size: 8,
+                    color: "38BDF8",
+                    space: 6,
+                  },
+                },
+                children: [
+                  new TextRun({
+                    text: "  " + t.what,
+                    font: "Arial",
+                    size: 19,
+                    color: "334155",
+                  }),
+                ],
+              }),
+            );
+
+            // Methods
+            children.push(
+              new Paragraph({
+                spacing: { before: 40, after: 80 },
+                children: [
+                  new TextRun({
+                    text: "🔧 Key Methods:  ",
+                    font: "Arial",
+                    size: 19,
+                    bold: true,
+                    color: TEAL,
+                  }),
+                  new TextRun({
+                    text: t.methods.join("  |  "),
+                    font: "Courier New",
+                    size: 17,
+                    color: "1E3A5F",
+                  }),
+                ],
+              }),
+            );
+
+            // Examples
+            for (const ex of t.examples) {
+              children.push(
+                new Paragraph({
+                  spacing: { before: 80, after: 30 },
+                  children: [
+                    new TextRun({
+                      text: "◆ " + ex.title,
+                      font: "Arial",
+                      size: 19,
+                      bold: true,
+                      color: "C2410C",
+                    }),
+                  ],
+                }),
+              );
+
+              const rawCode = ex.code[0].replace(/<[^>]+>/g, "");
+              const codeLines = rawCode.split("\n");
+              children.push(
+                new Table({
+                  width: { size: 9360, type: WidthType.DXA },
+                  columnWidths: [9360],
+                  rows: [
+                    new TableRow({
+                      children: [
+                        new TableCell({
+                          borders: {
+                            top: {
+                              style: BorderStyle.SINGLE,
+                              size: 4,
+                              color: "455A64",
+                            },
+                            bottom: {
+                              style: BorderStyle.SINGLE,
+                              size: 4,
+                              color: "455A64",
+                            },
+                            left: {
+                              style: BorderStyle.SINGLE,
+                              size: 14,
+                              color: "38BDF8",
+                            },
+                            right: {
+                              style: BorderStyle.SINGLE,
+                              size: 4,
+                              color: "455A64",
+                            },
+                          },
+                          shading: { fill: "050810", type: ShadingType.CLEAR },
+                          margins: {
+                            top: 80,
+                            bottom: 80,
+                            left: 140,
+                            right: 140,
+                          },
+                          children: codeLines.map(
+                            (line) =>
+                              new Paragraph({
+                                spacing: { before: 16, after: 16 },
+                                children: [
+                                  new TextRun({
+                                    text: line || " ",
+                                    font: "Courier New",
+                                    size: 17,
+                                    color: "A5F3FC",
+                                  }),
+                                ],
+                              }),
+                          ),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              );
+
+              children.push(sp(40));
+              const outLines = ex.output.split("\n");
+              children.push(
+                new Paragraph({
+                  spacing: { before: 0, after: 20 },
+                  children: [
+                    new TextRun({
+                      text: "▶ OUTPUT",
+                      font: "Courier New",
+                      size: 16,
+                      bold: true,
+                      color: "10B981",
+                    }),
+                  ],
+                }),
+                new Table({
+                  width: { size: 9360, type: WidthType.DXA },
+                  columnWidths: [9360],
+                  rows: [
+                    new TableRow({
+                      children: [
+                        new TableCell({
+                          borders: {
+                            top: {
+                              style: BorderStyle.SINGLE,
+                              size: 2,
+                              color: "064E3B",
+                            },
+                            bottom: {
+                              style: BorderStyle.SINGLE,
+                              size: 2,
+                              color: "064E3B",
+                            },
+                            left: {
+                              style: BorderStyle.SINGLE,
+                              size: 8,
+                              color: "10B981",
+                            },
+                            right: {
+                              style: BorderStyle.SINGLE,
+                              size: 2,
+                              color: "064E3B",
+                            },
+                          },
+                          shading: { fill: "021008", type: ShadingType.CLEAR },
+                          margins: {
+                            top: 60,
+                            bottom: 60,
+                            left: 120,
+                            right: 120,
+                          },
+                          children: outLines.map(
+                            (line) =>
+                              new Paragraph({
+                                spacing: { before: 14, after: 14 },
+                                children: [
+                                  new TextRun({
+                                    text: line || " ",
+                                    font: "Courier New",
+                                    size: 16,
+                                    color: "6EE7B7",
+                                  }),
+                                ],
+                              }),
+                          ),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              );
+              children.push(sp(60));
+            }
+
+            // ML use
+            children.push(
+              sp(40),
+              new Table({
+                width: { size: 9360, type: WidthType.DXA },
+                columnWidths: [9360],
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        borders: bord,
+                        shading: { fill: "ECFDF5", type: ShadingType.CLEAR },
+                        margins: { top: 80, bottom: 80, left: 140, right: 140 },
+                        children: [
+                          new Paragraph({
+                            spacing: { before: 0, after: 0 },
+                            children: [
+                              new TextRun({
+                                text: "🤖 ML Use:  ",
+                                font: "Arial",
+                                size: 18,
+                                bold: true,
+                                color: GREEN,
+                              }),
+                              new TextRun({
+                                text: t.ml,
+                                font: "Arial",
+                                size: 18,
+                                color: "065F46",
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            );
+            children.push(sp(180));
+          }
+
+          // Summary
+          children.push(
+            new Paragraph({
+              shading: { fill: DARK, type: ShadingType.CLEAR },
+              spacing: { before: 200, after: 0 },
+              children: [
+                new TextRun({
+                  text: "  📋 Quick Reference — All 20 Topics",
+                  font: "Arial",
+                  size: 28,
+                  bold: true,
+                  color: "FFFFFF",
+                }),
+              ],
+            }),
+            sp(80),
+          );
+
+          const sumRows = [
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: bord,
+                  shading: { fill: TEAL, type: ShadingType.CLEAR },
+                  width: { size: 500, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "#",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders: bord,
+                  shading: { fill: TEAL, type: ShadingType.CLEAR },
+                  width: { size: 2000, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "Topic",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders: bord,
+                  shading: { fill: TEAL, type: ShadingType.CLEAR },
+                  width: { size: 2400, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "Key Functions",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  borders: bord,
+                  shading: { fill: TEAL, type: ShadingType.CLEAR },
+                  width: { size: 4460, type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: "ML Application",
+                          font: "Arial",
+                          size: 17,
+                          bold: true,
+                          color: "FFFFFF",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ];
+
+          TOPICS.forEach((t, i) => {
+            sumRows.push(
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: bord,
+                    shading: {
+                      fill: i % 2 === 0 ? "FFFFFF" : "F0FDFA",
+                      type: ShadingType.CLEAR,
+                    },
+                    width: { size: 500, type: WidthType.DXA },
+                    margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: String(t.num),
+                            font: "Arial",
+                            size: 16,
+                            bold: true,
+                            color: TEAL,
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: bord,
+                    shading: {
+                      fill: i % 2 === 0 ? "FFFFFF" : "F0FDFA",
+                      type: ShadingType.CLEAR,
+                    },
+                    width: { size: 2000, type: WidthType.DXA },
+                    margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: t.title,
+                            font: "Arial",
+                            size: 16,
+                            bold: true,
+                            color: "111827",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: bord,
+                    shading: {
+                      fill: i % 2 === 0 ? "FFFFFF" : "F0FDFA",
+                      type: ShadingType.CLEAR,
+                    },
+                    width: { size: 2400, type: WidthType.DXA },
+                    margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: t.methods.slice(0, 2).join(", "),
+                            font: "Courier New",
+                            size: 15,
+                            color: "0E7490",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: bord,
+                    shading: {
+                      fill: i % 2 === 0 ? "FFFFFF" : "F0FDFA",
+                      type: ShadingType.CLEAR,
+                    },
+                    width: { size: 4460, type: WidthType.DXA },
+                    margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: t.ml.substring(0, 120),
+                            font: "Arial",
+                            size: 15,
+                            color: "374151",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            );
+          });
+
+          children.push(
+            new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [500, 2000, 2400, 4460],
+              rows: sumRows,
+            }),
+          );
+
+          const doc = new Document({
+            styles: {
+              default: { document: { run: { font: "Arial", size: 20 } } },
+            },
+            sections: [
+              {
+                properties: {
+                  page: {
+                    size: { width: 12240, height: 15840 },
+                    margin: {
+                      top: 1000,
+                      right: 1000,
+                      bottom: 1000,
+                      left: 1000,
+                    },
+                  },
+                },
+                children,
+              },
+            ],
+          });
+
+          const blob = await Packer.toBlob(doc);
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "matplotlib_notes_ml.docx";
+          a.click();
+          URL.revokeObjectURL(url);
+
+          const toast = document.getElementById("toast");
+          toast.textContent = "✅ matplotlib_notes_ml.docx saved!";
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 3500);
+        } catch (e) {
+          alert("Error: " + e.message);
+          console.error(e);
+        } finally {
+          btn.innerHTML = "💾 Save as .docx";
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>
