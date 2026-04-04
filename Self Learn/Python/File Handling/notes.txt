@@ -1,0 +1,5 @@
+Hello World!
+python is awesome.
+File handling is easy.
+Adding a first new line.
+Adding a second new line.

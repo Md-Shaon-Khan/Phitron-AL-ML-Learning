@@ -1,0 +1,3 @@
+Hello from with block.
+File closes automatically.
+One more line please.
