@@ -1,0 +1,5 @@
+alice@gmail.com
+bob@yahoo.com
+charlie@outlook.com
+dave@gmail.com
+eve@hotmail.com
