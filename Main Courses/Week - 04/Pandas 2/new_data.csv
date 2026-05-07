@@ -1,0 +1,101 @@
+,StudentID,FullName,Data Structure Marks,Algorithm Marks,Python Marks,CompletionStatus,EnrollmentDate,Instructor,Location,Country,Total Marks,A+ in DS,Passes in DS,First Name
+0,PH1001,Amena Islam,69.7,68.5,90.2,Completed,2024-01-24,Mr. Haque,Rangpur,Bangladesh,228.39999999999998,A,False,Amena
+1,PH1002,Kamal Akhter,65.9,71.8,87.1,Completed,2024-02-07,Ms. Salma,Mymensingh,Bangladesh,224.79999999999998,A,False,Kamal
+2,PH1003,Tania Bhuiyan,77.5,75.8,90.6,In Progress,2024-01-25,Mr. Karim,Chattogram,Bangladesh,243.9,A,True,Tania
+3,PH1004,Sajid Hasan,89.7,84.5,,In Progress,2024-06-28,Ms. Rina,Chattogram,Bangladesh,,A,True,Sajid
+4,PH1005,Quamrul Sarkar,89.0,66.6,72.7,Completed,2024-11-20,Mr. Karim,Rajshahi,Bangladesh,228.3,A,True,Quamrul
+5,PH1006,Tanvir Das,77.1,87.8,88.9,Completed,2024-05-15,Mr. Karim,Sylhet,Bangladesh,253.79999999999998,A,True,Tanvir
+6,PH1007,Osman Mimi,96.5,88.4,72.5,Completed,2025-03-15,Mr. Karim,Rajshahi,Bangladesh,257.4,A+,True,Osman
+7,PH1008,Kamal Talukder,97.1,94.8,75.7,Completed,2024-07-09,Ms. Rina,Mymensingh,Bangladesh,267.59999999999997,A+,True,Kamal
+8,PH1009,Faria Khatun,,,,In Progress,2024-03-08,Mr. Haque,Rangpur,Bangladesh,,A,False,Faria
+9,PH1010,Rezaul Khan,66.6,68.7,86.3,Completed,2025-03-17,Ms. Rina,Chattogram,Bangladesh,221.60000000000002,A,False,Rezaul
+10,PH1011,Fahmida Das,,,,Not Started,2024-10-15,Mr. Karim,Chattogram,Bangladesh,,A,False,Fahmida
+11,PH1012,Gitika Bhuiyan,70.4,65.1,89.6,Completed,2024-11-11,Mr. Haque,Sylhet,Bangladesh,225.1,A,True,Gitika
+12,PH1013,Masud Hasan,90.9,83.3,91.5,Completed,2024-11-10,Mr. Karim,Barishal,Bangladesh,265.7,A+,True,Masud
+13,PH1014,Liton Akhter,73.2,84.3,67.7,Completed,2024-02-12,Mr. Karim,Sylhet,Bangladesh,225.2,A,True,Liton
+14,PH1015,Afsana Hawlader,85.6,97.8,96.6,Completed,2024-09-06,Ms. Salma,Khulna,Bangladesh,280.0,A,True,Afsana
+15,PH1016,Sinthia Nath,72.6,76.5,85.0,Completed,2025-08-17,Ms. Salma,Dhaka,Bangladesh,234.1,A,True,Sinthia
+16,PH1017,Priya Ferdous,83.9,77.5,,In Progress,2024-04-03,Ms. Rina,Rajshahi,Bangladesh,,A,True,Priya
+17,PH1018,Tahmina Faruq,81.1,78.8,68.2,Completed,2025-12-19,Mr. David,Rangpur,Bangladesh,228.09999999999997,A,True,Tahmina
+18,PH1019,Golam Majumder,89.8,92.2,68.7,Completed,2024-12-02,Mr. Haque,Mymensingh,Bangladesh,250.7,A,True,Golam
+19,PH1020,Babul Saha,96.4,80.1,94.3,Completed,2025-03-09,Mr. Karim,Dhaka,Bangladesh,270.8,A+,True,Babul
+20,PH1021,Sadia Mimi,94.4,95.7,,Completed,2025-03-14,Ms. Rina,Khulna,Bangladesh,,A+,True,Sadia
+21,PH1022,Jahangir Sarkar,75.1,97.9,84.7,Completed,2025-07-23,Mr. David,Dhaka,Bangladesh,257.7,A,True,Jahangir
+22,PH1023,Mahmudul Hawlader,82.3,93.9,67.3,Completed,2024-09-28,Ms. Salma,Rangpur,Bangladesh,243.5,A,True,Mahmudul
+23,PH1024,Ziaur Mimi,,,,In Progress,2024-10-20,Mr. Haque,Barishal,Bangladesh,,A,False,Ziaur
+24,PH1025,Dilara Akter,78.5,87.8,75.2,Completed,2024-11-23,Mr. Karim,Dhaka,Bangladesh,241.5,A,True,Dilara
+25,PH1026,Jahangir Hasan,69.5,76.9,67.3,Completed,2024-02-18,Mr. David,Sylhet,Bangladesh,213.7,A,False,Jahangir
+26,PH1027,Ismail Mondal,95.2,72.8,93.7,In Progress,2024-10-26,Mr. David,Chattogram,Bangladesh,261.7,A+,True,Ismail
+27,PH1028,Urmi Sharma,,,88.6,In Progress,2024-05-10,Mr. David,Mymensingh,Bangladesh,,A,False,Urmi
+28,PH1029,Rasel Ferdous,70.1,90.8,,In Progress,2025-02-21,Mr. David,Sylhet,Bangladesh,,A,True,Rasel
+29,PH1030,Nurul Barua,68.8,97.1,88.5,Completed,2025-09-23,Mr. Karim,Barishal,Bangladesh,254.39999999999998,A,False,Nurul
+30,PH1031,Sumon Sharma,95.6,92.1,94.3,Completed,2024-07-05,Ms. Salma,Rajshahi,Bangladesh,282.0,A+,True,Sumon
+31,PH1032,Eshita Hasan,,,,Not Started,2025-06-25,Ms. Salma,Rajshahi,Bangladesh,,A,False,Eshita
+32,PH1033,Mehedi Chowdhury,91.1,81.1,88.1,In Progress,2024-07-01,Ms. Salma,Khulna,Bangladesh,260.29999999999995,A+,True,Mehedi
+33,PH1034,Mehedi Hasan,,,75.4,In Progress,2024-07-28,Ms. Rina,Barishal,Bangladesh,,A,False,Mehedi
+34,PH1035,Munira Khan,74.5,67.4,91.3,Completed,2024-04-01,Mr. Haque,Rangpur,Bangladesh,233.2,A,True,Munira
+35,PH1036,Firoz Biswas,97.7,74.0,68.7,Completed,2024-01-04,Mr. David,Rangpur,Bangladesh,240.39999999999998,A+,True,Firoz
+36,PH1037,Wahida Islam,89.1,65.1,96.5,Completed,2024-07-19,Ms. Salma,Barishal,Bangladesh,250.7,A,True,Wahida
+37,PH1038,Maliha Uddin,89.4,78.1,,In Progress,2024-11-11,Mr. David,Rangpur,Bangladesh,,A,True,Maliha
+38,PH1039,Roksana Paul,87.6,77.9,90.4,Completed,2024-12-10,Mr. Haque,Khulna,Bangladesh,255.9,A,True,Roksana
+39,PH1040,Sinthia Rahman,84.7,87.3,80.8,Completed,2024-05-10,Ms. Salma,Mymensingh,Bangladesh,252.8,A,True,Sinthia
+40,PH1041,Nurul Sheikh,86.5,76.4,92.8,Completed,2024-11-03,Mr. David,Rajshahi,Bangladesh,255.7,A,True,Nurul
+41,PH1042,Taslima Sharma,,,,Not Started,2024-01-02,Mr. Haque,Chattogram,Bangladesh,,A,False,Taslima
+42,PH1043,Jahangir Dey,,,,In Progress,2024-11-19,Ms. Rina,Rangpur,Bangladesh,,A,False,Jahangir
+43,PH1044,Nusrat Sharma,,,,Not Started,2024-11-23,Mr. Karim,Rangpur,Bangladesh,,A,False,Nusrat
+44,PH1045,Sakib Chowdhury,73.5,93.8,80.5,Completed,2025-12-17,Mr. Haque,Barishal,Bangladesh,247.8,A,True,Sakib
+45,PH1046,Parveen Barua,,,,In Progress,2025-10-27,Ms. Salma,Mymensingh,Bangladesh,,A,False,Parveen
+46,PH1047,Sufia Khatun,,,,In Progress,2024-04-27,Ms. Salma,Khulna,Bangladesh,,A,False,Sufia
+47,PH1048,Ismail Uddin,75.9,83.4,69.7,Completed,2024-12-10,Ms. Salma,Rajshahi,Bangladesh,229.0,A,True,Ismail
+48,PH1049,Omar Dey,72.0,79.3,95.8,Completed,2025-07-11,Mr. Karim,Rangpur,Bangladesh,247.10000000000002,A,True,Omar
+49,PH1050,Ayesha Rahman,,,,In Progress,2025-06-10,Mr. Haque,Rajshahi,Bangladesh,,A,False,Ayesha
+50,PH1051,Liton Khan,76.4,88.1,78.7,Completed,2025-05-14,Ms. Rina,Sylhet,Bangladesh,243.2,A,True,Liton
+51,PH1052,Yasmeen Akhter,79.6,94.5,71.2,Completed,2024-07-19,Mr. David,Rajshahi,Bangladesh,245.3,A,True,Yasmeen
+52,PH1053,Jahangir Talukder,97.3,79.3,93.4,Completed,2025-06-25,Mr. Haque,Dhaka,Bangladesh,270.0,A+,True,Jahangir
+53,PH1054,Anisur Khan,,,75.4,In Progress,2024-11-03,Mr. Karim,Sylhet,Bangladesh,,A,False,Anisur
+54,PH1055,Abir Faruq,72.4,88.8,91.1,Completed,2024-08-22,Mr. Haque,Chattogram,Bangladesh,252.29999999999998,A,True,Abir
+55,PH1056,Samira Sheikh,,,,Not Started,2024-05-04,Mr. Haque,Rangpur,Bangladesh,,A,False,Samira
+56,PH1057,Enamul Ahmed,91.3,93.9,85.4,Completed,2024-02-19,Mr. Haque,Dhaka,Bangladesh,270.6,A+,True,Enamul
+57,PH1058,Anisur Saha,76.6,93.9,93.0,Completed,2024-11-12,Mr. David,Mymensingh,Bangladesh,263.5,A,True,Anisur
+58,PH1059,Junaid Sharma,,,,In Progress,2024-07-06,Ms. Rina,Rangpur,Bangladesh,,A,False,Junaid
+59,PH1060,Minara Bhuiyan,77.5,82.2,,In Progress,2024-06-28,Ms. Rina,Rangpur,Bangladesh,,A,True,Minara
+60,PH1061,Shamima Akhter,72.2,92.1,76.6,Completed,2024-08-28,Mr. David,Dhaka,Bangladesh,240.9,A,True,Shamima
+61,PH1062,Nazmul Ahmed,90.8,88.5,87.0,Completed,2025-02-08,Mr. Karim,Chattogram,Bangladesh,266.3,A+,True,Nazmul
+62,PH1063,Yasmin Khan,84.8,81.1,83.1,Completed,2024-07-23,Mr. Haque,Barishal,Bangladesh,248.99999999999997,A,True,Yasmin
+63,PH1064,Parvin Majumder,89.5,75.7,90.3,Completed,2024-05-10,Ms. Salma,Rajshahi,Bangladesh,255.5,A,True,Parvin
+64,PH1065,Moriam Hawlader,,,,Not Started,2024-05-24,Ms. Salma,Khulna,Bangladesh,,A,False,Moriam
+65,PH1066,Lutfun Nath,,,77.4,In Progress,2024-03-10,Mr. Karim,Khulna,Bangladesh,,A,False,Lutfun
+66,PH1067,Iffat Faruq,65.4,74.7,81.3,Completed,2025-11-28,Mr. Karim,Khulna,Bangladesh,221.40000000000003,A,False,Iffat
+67,PH1068,Ayesha Islam,86.4,66.8,70.1,Completed,2025-02-13,Mr. David,Chattogram,Bangladesh,223.29999999999998,A,True,Ayesha
+68,PH1069,Nusrat Islam,,,90.9,In Progress,2025-09-25,Ms. Rina,Mymensingh,Bangladesh,,A,False,Nusrat
+69,PH1070,Tania Saha,95.6,75.6,,In Progress,2024-05-19,Ms. Salma,Khulna,Bangladesh,,A+,True,Tania
+70,PH1071,Dulal Begum,70.3,78.9,88.4,Completed,2024-03-08,Mr. Karim,Rajshahi,Bangladesh,237.6,A,True,Dulal
+71,PH1072,Touhid Sarkar,72.9,74.0,91.9,Completed,2025-12-28,Ms. Salma,Rangpur,Bangladesh,238.8,A,True,Touhid
+72,PH1073,Wahiduzzaman Khan,71.6,91.4,,In Progress,2024-11-05,Mr. Haque,Khulna,Bangladesh,,A,True,Wahiduzzaman
+73,PH1074,Ismail Islam,83.5,83.3,72.2,In Progress,2024-08-23,Mr. Karim,Rangpur,Bangladesh,239.0,A,True,Ismail
+74,PH1075,Nurul Talukder,97.7,93.4,84.6,Completed,2024-10-09,Mr. David,Dhaka,Bangladesh,275.70000000000005,A+,True,Nurul
+75,PH1076,Quazi Chowdhury,,,,Not Started,2025-08-17,Ms. Salma,Rangpur,Bangladesh,,A,False,Quazi
+76,PH1077,Amena Mridha,75.9,68.6,70.5,Completed,2024-02-16,Ms. Rina,Khulna,Bangladesh,215.0,A,True,Amena
+77,PH1078,Dulal Paul,73.6,68.9,91.3,Completed,2025-09-02,Mr. Karim,Mymensingh,Bangladesh,233.8,A,True,Dulal
+78,PH1079,Golam Ferdous,,,,In Progress,2024-04-17,Ms. Rina,Dhaka,Bangladesh,,A,False,Golam
+79,PH1080,Hasan Bhuiyan,88.7,69.1,98.1,Completed,2024-09-05,Ms. Salma,Sylhet,Bangladesh,255.9,A,True,Hasan
+80,PH1081,Munira Rahman,93.6,68.9,97.2,Completed,2024-09-14,Ms. Salma,Mymensingh,Bangladesh,259.7,A+,True,Munira
+81,PH1082,Kalinda Sarkar,81.4,81.1,80.5,Completed,2024-09-23,Ms. Salma,Sylhet,Bangladesh,243.0,A,True,Kalinda
+82,PH1083,Omar Bhuiyan,89.6,92.6,85.7,In Progress,2024-07-11,Ms. Rina,Sylhet,Bangladesh,267.9,A,True,Omar
+83,PH1084,Sufia Hawlader,75.9,71.4,88.7,Completed,2025-06-11,Ms. Salma,Rangpur,Bangladesh,236.0,A,True,Sufia
+84,PH1085,Laila Talukder,87.6,92.9,98.3,Completed,2025-12-16,Mr. Karim,Sylhet,Bangladesh,278.8,A,True,Laila
+85,PH1086,Masud Biswas,96.0,65.5,69.9,Completed,2025-02-28,Ms. Salma,Chattogram,Bangladesh,231.4,A+,True,Masud
+86,PH1087,Kamrul Khatun,93.0,93.2,80.3,In Progress,2025-06-20,Mr. David,Mymensingh,Bangladesh,266.5,A+,True,Kamrul
+87,PH1088,Tahmina Hossain,96.9,90.2,81.7,In Progress,2024-10-03,Mr. Karim,Chattogram,Bangladesh,268.8,A+,True,Tahmina
+88,PH1089,Ismail Sheikh,92.1,75.0,77.7,Completed,2024-12-10,Mr. Haque,Rangpur,Bangladesh,244.8,A+,True,Ismail
+89,PH1090,Rubel Chowdhury,,,,In Progress,2024-03-06,Mr. Haque,Rajshahi,Bangladesh,,A,False,Rubel
+90,PH1091,Bristy Sharma,87.7,95.6,80.8,Completed,2024-04-15,Mr. Haque,Sylhet,Bangladesh,264.1,A,True,Bristy
+91,PH1092,Priya Barua,,,,In Progress,2024-06-19,Mr. David,Mymensingh,Bangladesh,,A,False,Priya
+92,PH1093,Khalid Ahmed,78.0,77.2,75.1,Completed,2025-07-28,Mr. Karim,Rangpur,Bangladesh,230.29999999999998,A,True,Khalid
+93,PH1094,Sharmin Rahman,,,,Not Started,2024-10-28,Ms. Rina,Khulna,Bangladesh,,A,False,Sharmin
+94,PH1095,Samira Khan,71.5,73.5,90.7,Completed,2024-10-26,Ms. Salma,Chattogram,Bangladesh,235.7,A,True,Samira
+95,PH1096,Zobair Hossain,77.4,69.5,95.9,Completed,2025-05-26,Ms. Rina,Sylhet,Bangladesh,242.8,A,True,Zobair
+96,PH1097,Taslima Faruq,94.7,95.5,96.1,In Progress,2024-09-12,Mr. David,Barishal,Bangladesh,286.29999999999995,A+,True,Taslima
+97,PH1098,Wahiduzzaman Majumder,,,,In Progress,2024-02-05,Mr. Haque,Barishal,Bangladesh,,A,False,Wahiduzzaman
+98,PH1099,Sadia Paul,87.9,87.9,84.9,Completed,2024-01-09,Mr. David,Chattogram,Bangladesh,260.70000000000005,A,True,Sadia
+99,PH1100,Firoz Khan,,,,Not Started,2024-08-01,Ms. Salma,Chattogram,Bangladesh,,A,False,Firoz
