@@ -1,0 +1,209 @@
+1. What is a Feature?
+
+Feature মানে dataset এর একটি property / column।
+
+Example:
+
+Age	Salary	Height	Passed
+22	30000	5.7	Yes
+
+এখানে:
+
+Age → feature
+Salary → feature
+Height → feature
+
+আর:
+
+Passed → target/output label
+2. What is Feature Engineering?
+
+Feature Engineering মানে:
+
+Raw data কে modify/transform করে machine learning এর জন্য better feature তৈরি করা।
+
+সহজ ভাষায়:
+
+Machine learning model কে useful information খাওয়ানো।
+Example 1
+
+ধরি dataset এ আছে:
+
+First_Name	Last_Name
+Shaon	Ahmed
+
+আমরা নতুন feature বানালাম:
+
+Full_Name
+Shaon Ahmed
+
+এটা feature engineering।
+
+Example 2
+
+ধরি:
+
+Date
+2026-05-25
+
+এখান থেকে:
+
+Year
+Month
+Day
+Weekday
+
+extract করলাম।
+
+এটাও feature engineering।
+
+Example 3
+
+ধরি salary খুব skewed:
+
+Salary
+1000
+2000
+5000000
+
+এখানে log transform করলাম:
+
+np.log1p(salary)
+
+এটাও feature engineering।
+
+3. Why Feature Engineering is Important?
+
+কারণ ML model raw data “understand” করে না।
+
+Model শুধু:
+
+numbers
+patterns
+relationships
+
+understand করে।
+
+Real Truth of ML
+
+অনেক সময়:
+
+Good Feature Engineering + Simple Model
+>
+Bad Feature Engineering + Complex Model
+
+মানে:
+
+ভালো preprocessing
+ভালো features
+
+accuracy massively improve করতে পারে।
+
+4. Difference Between Important Terms
+
+এটা খুব important।
+
+অনেকে সব একসাথে mix করে ফেলে।
+
+A. Data Cleaning
+
+Dirty data fix করা।
+
+Example:
+
+missing values
+duplicates
+wrong datatype
+
+Example:
+
+df.drop_duplicates()
+B. Data Preprocessing
+
+Model-ready format এ convert করা।
+
+Example:
+
+encoding
+scaling
+normalization
+
+Example:
+
+StandardScaler()
+C. Feature Engineering
+
+New useful feature তৈরি করা বা existing feature improve করা।
+
+Example:
+
+df["BMI"] = weight / (height**2)
+D. Feature Selection
+
+সব feature ব্যবহার না করে important feature select করা।
+
+কারণ useless feature model কে confuse করতে পারে।
+
+5. Complete Real Workflow
+
+Real ML workflow সাধারণত এমন হয়:
+
+Collect Data
+    ↓
+Clean Data
+    ↓
+Preprocess Data
+    ↓
+Feature Engineering
+    ↓
+Feature Selection
+    ↓
+Train Model
+    ↓
+Evaluate
+6. Small Real-Life Analogy
+
+Imagine:
+
+You are predicting student performance.
+
+Raw dataset:
+
+Study_Hours	Sleep_Hours
+5	6
+
+Now you create:
+
+Study_to_Sleep_Ratio
+
+New feature:
+
+Ratio
+0.83
+
+এই নতুন feature হয়তো performance prediction better করবে।
+
+এইটাই feature engineering এর beauty।
+
+মানুষকে relationship বুঝতে হয়।
+Model নিজে magically সব বুঝে না। Sadly, silicon rocks are still not philosophers.
+
+7. Main Categories of Feature Engineering
+
+আজ শুধু overview:
+
+Type	Example
+Missing Value Handling	fillna()
+Encoding	One-hot encoding
+Scaling	StandardScaler
+Transformation	log transform
+Feature Creation	BMI
+Datetime Features	month/day extraction
+Text Features	TF-IDF
+8. Important Mindset
+
+Feature engineering করার সময় সবসময় ভাববে:
+
+“How can I represent the information better for the model?”
+
+এটাই core philosophy।
