@@ -3,6 +3,6 @@ package-lock.json
 test.js
 package.json
 Dataset
-*.pdf
+# *.pdf
 *.docx
-Machine Learning Models.pdf
+# Machine Learning Models.pdf
